@@ -25,8 +25,6 @@
     { key: "daylight", name: "Daylight", path: "themes/daylight.html" },
   ];
   const currentTheme = document.documentElement.dataset.boardTheme || "original";
-  // Test pages (like music-test.html) stay put and ignore theme switching.
-  const testPage = "testPage" in document.documentElement.dataset;
   let sheetTheme = "original";
 
   function readStore(key, fallback) {
@@ -37,7 +35,6 @@
   }
 
   function goToTheme(key) {
-    if (testPage) return;
     const theme = THEMES.find((t) => t.key === key) || THEMES[0];
     if (theme.key === currentTheme) return;
     try { sessionStorage.setItem("themeToast", theme.name); } catch (e) { /* ignore */ }
@@ -51,7 +48,6 @@
   }
 
   function cycleTheme(step) {
-    if (testPage) return;
     const i = THEMES.findIndex((t) => t.key === currentTheme);
     const next = THEMES[(i + step + THEMES.length) % THEMES.length].key;
     writeStore("themeOverride", { theme: next, basedOn: sheetTheme, day: now().toDateString() });

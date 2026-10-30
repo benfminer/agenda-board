@@ -1,13 +1,12 @@
 # Classroom Agenda Board
 
-A classroom TV display that shows the day's agenda, notes, upcoming events, weather, a quote of the day, the class schedule, and an independent work bell. Everything comes from a Google Sheet, so you update the board by editing the Sheet.
+A classroom TV display that shows the day's agenda, notes, upcoming events, weather, a quote of the day, the class schedule, an independent work bell, and radio music. Everything comes from a Google Sheet, so you update the board by editing the Sheet.
 
 ## Links
 
 | What | Link |
 |---|---|
 | **Live board** | https://benfminer.github.io/agenda-board/ |
-| **Board with music (testing)** | https://benfminer.github.io/agenda-board/music-test.html |
 | **Full guide** | [SETUP.md](SETUP.md) |
 | **Google Sheet** | "ALC Agenda" (link is in `config.js`) |
 
@@ -36,20 +35,20 @@ Starter files for every tab are in [`sheet-template/`](sheet-template/).
 |---|---|
 | **OK** | Turns on sound and full screen (once per page load) |
 | **Left / Right** | Switch between the three looks (Original, Trailhead, Daylight) |
-| **Up / Down** | Switch radio stations (music test page only) |
+| **Up / Down** | Switch radio stations |
 | **Rewind / Fast-forward** | Also switch radio stations |
 | **Play / Pause** | Pause or resume the music. The bell still rings. |
 
 Remote picks last for the rest of the day. Changing the Sheet always wins.
 
-## Music (testing)
-
-Music is only on the [test page](https://benfminer.github.io/agenda-board/music-test.html) for now, while it gets tried on the TV.
+## Music
 
 - Pick a station from the **Music** dropdown in the Settings tab, or choose **Off**.
+- The station (and song, when known) shows under the Quote of the Day.
 - The music gets quieter while the bell rings.
+- Switching looks reloads the page, so press OK again to bring the music back.
 - SomaFM stations and KUSC also show the song that's playing.
-- To preview a station without changing the Sheet, add `?music=` and the station name to the test page address, like `music-test.html?music=SomaFM Fluid`.
+- To preview a station without changing the Sheet, add `?music=` and the station name to the board's address, like `https://benfminer.github.io/agenda-board/?music=SomaFM Fluid`.
 
 ## Changing the code
 

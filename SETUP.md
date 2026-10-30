@@ -13,6 +13,7 @@ The classroom agenda board runs on the Fire TV and reads everything from a Googl
 - **Coming Up:** events from the Events tab within the next 30 days, with a countdown.
 - **5-Day Forecast:** automatic, from the free Open-Meteo weather service.
 - **Quote of the Day:** automatic, from a built-in list of 180 quotes (`quotes.js`). A new one each school day.
+- **Music:** radio from the station picked in the Settings tab. The station (and song, when known) shows under the quote.
 - **Period strip:** the day's periods with "Class time," "Independent work," or "Done."
 - **Bell:** a soft chime plus a big "Independent Work Time" banner 30 minutes before each period ends.
 
@@ -45,7 +46,7 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 
 ### Stations (`Station` | `Stream` | `Ads` | `About`)
 - The list of radio stations for music. Starter list: `sheet-template/stations.csv`. Only Station and Stream are used; the other columns are notes.
-- **Music is only on the test page for now:** `music-test.html`. Add `?music=Station Name` to the address to preview a station without the Settings row.
+- The station (and song, when known) shows in small type under the Quote of the Day. Add `?music=Station Name` to the address to preview a station without changing the Sheet.
 - Music plays whenever the board is on (turn the TV off after school), and starts with the same OK press as the bell. It gets quieter while the bell rings.
 - Remote: **up/down** (or **rewind/fast-forward**) switch stations. A pick lasts the rest of the day, or until the Sheet's Music setting changes. **Play/pause** pauses only the music; the independent work bell still rings. A pause lasts until you press it again or the board reloads overnight.
 - SomaFM stations and KUSC also show the song playing. The others show just the station name.
@@ -105,7 +106,7 @@ Fully Kiosk Browser was the original plan but isn't available in the Amazon Apps
 
 ## For code changes
 - Settings live in `config.js`: Sheet link, weather location, schedules (`schedules`, `weekdaySchedules`), bell timing (`independentWorkMinutes`), no-bell days (`noIndependentWorkDays`, Friday = 5), quote start date (`listStartDate`), and refresh timing.
-- Files: `index.html` + `style.css` (Original), `themes/trailhead.*`, `themes/daylight.*`, shared logic in `app.js`. Music is `music.js`, loaded only by `music-test.html` for now.
-- **After changing any file, bump the `?v=` number** on the script and stylesheet links in `index.html`, `music-test.html`, and both `themes/` pages (all use the same number). Otherwise the TV may mix old and new files and break.
+- Files: `index.html` + `style.css` (Original), `themes/trailhead.*`, `themes/daylight.*`, shared logic in `app.js`. Music is `music.js`.
+- **After changing any file, bump the `?v=` number** on the script and stylesheet links in `index.html` and both `themes/` pages (all use the same number). Otherwise the TV may mix old and new files and break.
 - Pushing to `main` on GitHub publishes in about a minute. The TV picks it up at its 3 AM reload, or right away on refresh.
 - The old Word of the Day list is in the git history if you ever want it back.

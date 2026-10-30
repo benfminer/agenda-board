@@ -184,6 +184,7 @@ h2 {
 .quote h2 { color: var(--lilac); }
 .quote-text { font-size: 3vh; line-height: 1.3; }
 .quote-author { font-size: 2.2vh; color: var(--lilac); margin-top: 0.8vh; }
+.music-now { margin-top: auto; padding-top: 1vh; font-size: 2.1vh; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* Timeline of the school day */
 .timeline-card { padding: 1.2vh 1.6vw; }
