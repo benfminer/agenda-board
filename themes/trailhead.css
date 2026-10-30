@@ -216,3 +216,6 @@ h2 {
 /* Minimum day and no-school pills */
 .period.min-day { background: rgba(255, 172, 0, 0.25); border-color: var(--amber); }
 .period.no-school { justify-content: center; }
+
+/* Keep line breaks typed inside a Sheet cell (Option+Enter) */
+.agenda-list li > span:last-child, .notes-list li { white-space: pre-line; }

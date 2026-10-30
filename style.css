@@ -258,3 +258,6 @@ h2 {
 .period.min-day .range { color: var(--events); }
 .period.no-school { grid-column: 1 / -1; }
 .period.no-school .range { color: var(--muted); }
+
+/* Keep line breaks typed inside a Sheet cell (Option+Enter) */
+.agenda-list li > span:last-child, .notes-list li { white-space: pre-line; }

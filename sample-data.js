@@ -9,7 +9,7 @@ function sampleData(today) {
   return {
     agenda: [
       { date: d(0), item: "Math Review #12" },
-      { date: d(0), item: "Finish all maps and readings" },
+      { date: d(0), item: "Finish all maps and readings\nPages 12-15, then the map quiz" },
       { date: d(1), item: "Tomorrow's item (should not show today)" },
       { date: "", item: "No date, so it shows every day" },
     ],
