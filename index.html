@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Class Agenda Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="board">
+    <header class="top">
+      <div class="date">
+        <div id="weekday" class="weekday"></div>
+        <div id="fulldate" class="fulldate"></div>
+      </div>
+      <div id="clock" class="clock"></div>
+      <div id="weather" class="weather">
+        <div class="weather-icon" id="w-icon"></div>
+        <div>
+          <div class="weather-temp" id="w-temp">--°</div>
+          <div class="weather-desc" id="w-desc">Loading weather</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="middle">
+      <section class="card agenda">
+        <h2>Today's Agenda</h2>
+        <div class="fit" id="agenda-fit"><ol id="agenda-list" class="agenda-list"></ol></div>
+      </section>
+      <div class="side">
+        <section class="card notes">
+          <h2>Notes</h2>
+          <div class="fit" id="notes-fit"><ul id="notes-list" class="notes-list"></ul></div>
+        </section>
+        <section class="card events">
+          <h2>Coming Up</h2>
+          <div class="fit" id="events-fit"><ul id="events-list" class="events-list"></ul></div>
+        </section>
+      </div>
+    </main>
+
+    <section class="bottom">
+      <div class="card word">
+        <h2>Word of the Day</h2>
+        <div class="word-line"><span id="word" class="word-text"></span> <span id="word-pos" class="word-pos"></span></div>
+        <div id="word-def" class="word-def"></div>
+        <div id="word-ex" class="word-ex"></div>
+      </div>
+      <div class="card quote">
+        <h2>Quote of the Day</h2>
+        <div id="quote-text" class="quote-text"></div>
+        <div id="quote-author" class="quote-author"></div>
+      </div>
+    </section>
+
+    <footer id="schedule" class="schedule"></footer>
+  </div>
+
+  <div id="banner" class="banner hidden">
+    <div class="banner-title">Independent Work Time</div>
+    <div id="banner-sub" class="banner-sub"></div>
+  </div>
+
+  <div id="sound-prompt" class="sound-prompt hidden">Press OK on the remote to turn on the bell sound</div>
+  <div id="status" class="status"></div>
+
+  <script src="config.js"></script>
+  <script src="words.js"></script>
+  <script src="quotes.js"></script>
+  <script src="sample-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
