@@ -423,6 +423,9 @@
   }
 
   function unlockSound() {
+    // The same remote press also hides the browser's toolbar.
+    const root = document.documentElement;
+    if (!document.fullscreenElement && root.requestFullscreen) root.requestFullscreen().catch(() => {});
     if (!audioCtx) return;
     audioCtx.resume().then(() => {
       $("sound-prompt").classList.add("hidden");
