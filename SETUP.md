@@ -46,3 +46,6 @@ If you use the built-in Silk browser instead, press OK on the remote once after 
 
 ## Testing a specific time
 Add `?now=` to the address, for example `?now=2026-11-02T08:59:55`, to see what the board does at that moment (handy for checking the bell).
+
+## After changing code
+Bump the `?v=` number on the script and stylesheet links in `index.html` and the two `themes/` pages (all files use the same number). This makes the TV load the new code instead of an old saved copy.

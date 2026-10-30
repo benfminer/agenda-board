@@ -246,10 +246,10 @@
 
   function renderData() {
     const today = startOfDay(now());
-    renderAgenda(today);
-    renderNotes(today);
-    renderEvents(today);
-    renderStatus();
+    safe(() => renderAgenda(today));
+    safe(() => renderNotes(today));
+    safe(() => renderEvents(today));
+    safe(renderStatus);
   }
 
   function renderAgenda(today) {
@@ -386,7 +386,7 @@
       $("w-icon").textContent = icon;
       $("w-temp").textContent = `${Math.round(j.current.temperature_2m)}°F`;
       $("w-desc").textContent = `${desc}  ·  High ${hi}° Low ${lo}°${rain >= 30 ? `  ·  ${rain}% rain` : ""}`;
-      renderForecast(j.daily);
+      safe(() => renderForecast(j.daily));
     } catch (e) {
       console.warn("Weather load failed", e);
     }
@@ -501,23 +501,28 @@
 
   // ---------- Main loop ----------
   let lastDay = "";
+  // Runs one piece of the board. If it breaks, the rest keeps working.
+  function safe(fn) {
+    try { fn(); } catch (e) { console.warn("Board error", e); }
+  }
+
   function tick() {
     const d = now();
-    renderClock(d);
-    renderSchedule(d);
-    checkBells(d);
-    checkNightlyReload(d);
+    safe(() => renderClock(d));
+    safe(() => renderSchedule(d));
+    safe(() => checkBells(d));
+    safe(() => checkNightlyReload(d));
     const dayKey = d.toDateString();
     if (dayKey !== lastDay) {
       lastDay = dayKey;
-      renderDaily(d);
-      if (data) renderData();
+      safe(() => renderDaily(d));
+      if (data) safe(renderData);
     }
   }
 
-  loadCached();
-  if (sheetId() && !params.get("sample")) goToTheme(wantedTheme());
-  showThemeToast();
+  safe(loadCached);
+  safe(() => { if (sheetId() && !params.get("sample")) goToTheme(wantedTheme()); });
+  safe(showThemeToast);
   tick();
   refreshSheet();
   refreshWeather();
