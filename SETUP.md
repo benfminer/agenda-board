@@ -17,11 +17,11 @@ Privacy: anyone with the link can see the sheet. Use first names or initials in 
 - **Notes**: shows until the end of the "Show until" date. Leave that blank to keep a note up until you delete it.
 - **Events**: only events in the next 30 days show up, with a countdown.
 - Dates can be typed like `11/4/2026`, `11/4`, or `2026-11-04`.
-- The TV checks for changes every 5 minutes.
+- The TV checks for changes every minute (Google can take a minute or two to publish an edit).
 
 ## Picking the look (theme)
 There are three looks: **Original**, **Trailhead**, and **Daylight**.
-- **From the Sheet:** in the Settings tab, change the Value next to Theme. The TV switches within 5 minutes. Tip: select that cell and use Insert > Dropdown with the three names so nobody has to type them.
+- **From the Sheet:** in the Settings tab, change the Value next to Theme. The TV switches within a few minutes. Tip: select that cell and use Insert > Dropdown with the three names so nobody has to type them.
 - **From the remote:** press left or right to flip through the looks right away. A remote pick lasts until the end of the day, then the board goes back to the Sheet's choice. Changing the Sheet always wins.
 
 ## 2. Put it on GitHub Pages

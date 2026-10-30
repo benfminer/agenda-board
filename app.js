@@ -493,6 +493,14 @@
     $("board").style.transform = `translate(${x}px, ${y}px)`;
   }
 
+  // Asks the browser to keep the screen on while the board is showing.
+  // Browsers drop this when the page is hidden, so ask again when it returns.
+  async function keepAwake() {
+    if (!("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+    try { await navigator.wakeLock.request("screen"); } catch (e) { console.warn("Wake lock unavailable", e); }
+  }
+  document.addEventListener("visibilitychange", keepAwake);
+
   function checkNightlyReload(d) {
     if (d.getHours() === 3 && d.getMinutes() === 0 && Date.now() - loadedAt > 3600000) {
       location.reload();
@@ -523,6 +531,7 @@
   safe(loadCached);
   safe(() => { if (sheetId() && !params.get("sample")) goToTheme(wantedTheme()); });
   safe(showThemeToast);
+  keepAwake();
   tick();
   refreshSheet();
   refreshWeather();

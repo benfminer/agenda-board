@@ -35,6 +35,6 @@ const CONFIG = {
   eventDaysAhead: 30,
 
   // How often to check for new data, in minutes.
-  sheetRefreshMinutes: 5,
+  sheetRefreshMinutes: 1,
   weatherRefreshMinutes: 30,
 };
