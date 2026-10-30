@@ -19,7 +19,7 @@ The classroom agenda board runs on the Fire TV and reads everything from a Googl
 ## The Google Sheet
 The Sheet must be shared as **Anyone with the link: Viewer**. Anyone with the link can see it, so use first names, initials, or staff names only.
 
-Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Events**, **Settings**, **Special Days**. Starter files are in `sheet-template/`.
+Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Events**, **Settings**, **Special Days**, **Stations**. Starter files are in `sheet-template/`.
 
 ### Agenda (`Date` | `Item`)
 - One row per item. Items show in row order.
@@ -64,9 +64,10 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 ### How fast changes show up
 | What | How often |
 |---|---|
-| Sheet (agenda, notes, events, theme, message, special days) | Every minute, plus a minute or two for Google to publish the edit |
+| Sheet (agenda, notes, events, theme, message, music, special days) | Every minute, plus a minute or two for Google to publish the edit |
 | Weather and forecast | Every 30 minutes |
 | Quote | Once per school day |
+| Song name (SomaFM and KUSC) | Every 30 seconds |
 | Whole page reload (picks up code changes) | Every night at 3 AM |
 
 ## The schedule
@@ -104,7 +105,7 @@ Fully Kiosk Browser was the original plan but isn't available in the Amazon Apps
 
 ## For code changes
 - Settings live in `config.js`: Sheet link, weather location, schedules (`schedules`, `weekdaySchedules`), bell timing (`independentWorkMinutes`), no-bell days (`noIndependentWorkDays`, Friday = 5), quote start date (`listStartDate`), and refresh timing.
-- Files: `index.html` + `style.css` (Original), `themes/trailhead.*`, `themes/daylight.*`, shared logic in `app.js`.
-- **After changing any file, bump the `?v=` number** on the script and stylesheet links in `index.html` and both `themes/` pages (all use the same number). Otherwise the TV may mix old and new files and break.
+- Files: `index.html` + `style.css` (Original), `themes/trailhead.*`, `themes/daylight.*`, shared logic in `app.js`. Music is `music.js`, loaded only by `music-test.html` for now.
+- **After changing any file, bump the `?v=` number** on the script and stylesheet links in `index.html`, `music-test.html`, and both `themes/` pages (all use the same number). Otherwise the TV may mix old and new files and break.
 - Pushing to `main` on GitHub publishes in about a minute. The TV picks it up at its 3 AM reload, or right away on refresh.
 - The old Word of the Day list is in the git history if you ever want it back.
