@@ -25,6 +25,8 @@
     { key: "daylight", name: "Daylight", path: "themes/daylight.html" },
   ];
   const currentTheme = document.documentElement.dataset.boardTheme || "original";
+  // Test pages (like music-test.html) stay put and ignore theme switching.
+  const testPage = "testPage" in document.documentElement.dataset;
   let sheetTheme = "original";
 
   function readStore(key, fallback) {
@@ -35,6 +37,7 @@
   }
 
   function goToTheme(key) {
+    if (testPage) return;
     const theme = THEMES.find((t) => t.key === key) || THEMES[0];
     if (theme.key === currentTheme) return;
     try { sessionStorage.setItem("themeToast", theme.name); } catch (e) { /* ignore */ }
@@ -48,6 +51,7 @@
   }
 
   function cycleTheme(step) {
+    if (testPage) return;
     const i = THEMES.findIndex((t) => t.key === currentTheme);
     const next = THEMES[(i + step + THEMES.length) % THEMES.length].key;
     writeStore("themeOverride", { theme: next, basedOn: sheetTheme, day: now().toDateString() });
@@ -62,9 +66,13 @@
   function showThemeToast() {
     let name = null;
     try { name = sessionStorage.getItem("themeToast"); sessionStorage.removeItem("themeToast"); } catch (e) { /* ignore */ }
-    if (!name) return;
+    if (name) toast(`${name} theme`);
+  }
+
+  // A big message in the middle of the screen for a couple of seconds.
+  function toast(text) {
     const t = document.createElement("div");
-    t.textContent = `${name} theme`;
+    t.textContent = text;
     t.style.cssText = "position:fixed;left:50%;top:45%;transform:translate(-50%,-50%);z-index:99;"
       + "background:rgba(0,0,0,0.8);color:#fff;font:700 5vh/1.2 sans-serif;padding:2.4vh 3vw;"
       + "border-radius:2vh;transition:opacity 0.6s;pointer-events:none";
@@ -72,6 +80,7 @@
     setTimeout(() => { t.style.opacity = "0"; }, 2000);
     setTimeout(() => t.remove(), 2800);
   }
+  window.boardToast = toast;
 
   function startOfDay(d) {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -142,6 +151,7 @@
   }
 
   function renderDaily(d) {
+    if (!$("quote-text")) return; // the music test page has no quote card
     const i = schoolDayIndex(d);
     const q = QUOTES[i % QUOTES.length];
     $("quote-text").textContent = `"${q.text}"`;
@@ -219,6 +229,23 @@
     return row && row.value ? { text: row.value, until: row.until || row.showuntil || "" } : null;
   }
 
+  // Reads the Music row from the Settings tab: a station name, or "Off".
+  function musicFromSettings(rows) {
+    const row = rows.find((r) => (r.setting || "").toLowerCase() === "music");
+    return row ? (row.value || "").trim() : "";
+  }
+
+  // Stations tab rows look like "SomaFM Fluid | https://...".
+  function stationsFrom(rows) {
+    return rows
+      .filter((r) => r.station && /^https:\/\//.test(r.stream || ""))
+      .map((r) => ({ name: r.station.trim(), stream: r.stream.trim() }));
+  }
+  window.boardMusic = () => ({
+    choice: (data && data.music) || "",
+    stations: (data && data.stations) || [],
+  });
+
   // ---------- Day types (Regular, Minimum, No School) ----------
   // Special Days rows look like "11/25/2026 | Minimum" or "11/11/2026 | No School".
   function dayType(d) {
@@ -253,14 +280,20 @@
     try {
       // Optional tabs: if one is missing, Google sends the first tab instead,
       // whose rows have no "setting"/"schedule" column and are ignored.
-      const [agenda, notes, events, settings, special] = await Promise.all([
+      const [agenda, notes, events, settings, special, stations] = await Promise.all([
         fetchTab(id, CONFIG.tabs.agenda),
         fetchTab(id, CONFIG.tabs.notes),
         fetchTab(id, CONFIG.tabs.events),
         fetchTab(id, CONFIG.tabs.settings).catch(() => []),
         fetchTab(id, CONFIG.tabs.special).catch(() => []),
+        fetchTab(id, CONFIG.tabs.stations).catch(() => []),
       ]);
-      data = { agenda, notes, events, special, message: messageFromSettings(settings) };
+      data = {
+        agenda, notes, events, special,
+        message: messageFromSettings(settings),
+        music: musicFromSettings(settings),
+        stations: stationsFrom(stations),
+      };
       dataSource = "sheet";
       lastUpdate = new Date();
       sheetTheme = themeFromSettings(settings);
@@ -524,6 +557,7 @@
 
   let bannerTimer = null;
   function ring(period) {
+    document.dispatchEvent(new Event("bell")); // lets music get quieter
     playChime();
     $("banner-sub").textContent = `${format12(minutesOf(period.start))} - ${format12(minutesOf(period.end))} class: ${CONFIG.independentWorkMinutes} minutes left`;
     $("banner").classList.remove("hidden");

@@ -5,7 +5,7 @@ const CONFIG = {
   sheetUrl: "https://docs.google.com/spreadsheets/d/1YUe5vWZbMZC_54jU0HRcJsj-ajtwBHXJNg2eTfFXskw/edit?usp=sharing",
 
   // Tab names in the Google Sheet. They must match exactly.
-  tabs: { agenda: "Agenda", notes: "Notes", events: "Events", settings: "Settings", special: "Special Days" },
+  tabs: { agenda: "Agenda", notes: "Notes", events: "Events", settings: "Settings", special: "Special Days", stations: "Stations" },
 
   // Weather location (92105, City Heights, San Diego).
   weather: { latitude: 32.74, longitude: -117.09, timezone: "America/Los_Angeles" },
@@ -44,6 +44,10 @@ const CONFIG = {
 
   // Only show upcoming events this many days ahead.
   eventDaysAhead: 30,
+
+  // Music volume, from 0 (silent) to 1 (full). The TV's own volume still
+  // applies on top of this. Music only plays during the school day.
+  musicVolume: 0.6,
 
   // How often to check for new data, in minutes.
   sheetRefreshMinutes: 1,

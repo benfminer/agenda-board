@@ -1,0 +1,20 @@
+Station,Stream,Ads,About
+Off,,,No music
+SomaFM Groove Salad,https://ice2.somafm.com/groovesalad-128-aac,No ads,Chill downtempo beats
+SomaFM Fluid,https://ice2.somafm.com/fluid-128-aac,No ads,Instrumental hip hop (closest to lofi)
+SomaFM Drone Zone,https://ice2.somafm.com/dronezone-128-aac,No ads,Very calm ambient
+SomaFM Bossa Beyond,https://ice2.somafm.com/bossa-128-aac,No ads,Brazilian bossa nova
+SomaFM Secret Agent,https://ice2.somafm.com/secretagent-128-aac,No ads,Spy movie lounge music
+SomaFM Christmas Lounge,https://ice2.somafm.com/christmas-128-aac,No ads,Chill holiday music
+Radio Paradise Mellow,https://stream.radioparadise.com/mellow-128,No ads,Soft rock and acoustic (has lyrics)
+WQXR Classical (NY),https://stream.wqxr.org/wqxr,No ads (some talk),New York classical
+KUSC Classical (LA),https://playerservices.streamtheworld.com/api/livestream-redirect/KUSCMP256.mp3,No ads (some talk),Los Angeles classical
+WBGO Jazz (NY),https://ais-sa8.cdnstream1.com/3629_128.mp3,No ads (some talk),Newark/New York jazz
+Jazz 88.3 KSDS (San Diego),https://ksds-ice.streamguys1.com/ksds.mp3,No ads (some talk),San Diego jazz
+KROQ (LA),https://live.amperwave.net/direct/audacy-kroqfmaac-imc,Commercials,Alternative rock
+KIIS FM (LA),https://stream.revma.ihrhls.com/zc185,Commercials,Top 40 pop
+KOST 103.5 (LA),https://stream.revma.ihrhls.com/zc193,Commercials,Soft pop
+Star 94.1 (San Diego),https://stream.revma.ihrhls.com/zc253,Commercials,Pop hits
+Z100 (NY),https://stream.revma.ihrhls.com/zc1469,Commercials,Top 40 pop
+Hot 97 (NY),https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFMAAC.aac,Commercials,Hip hop
+Lite FM 106.7 (NY),https://stream.revma.ihrhls.com/zc1477,Commercials,Soft pop
