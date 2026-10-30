@@ -46,8 +46,8 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 ### Stations (`Station` | `Stream` | `Ads` | `About`)
 - The list of radio stations for music. Starter list: `sheet-template/stations.csv`. Only Station and Stream are used; the other columns are notes.
 - **Music is only on the test page for now:** `music-test.html`. Add `?music=Station Name` to the address to preview a station without the Settings row.
-- Music plays only from the first class to the end of the last class on school days, and starts with the same OK press as the bell. It gets quieter while the bell rings.
-- Remote: **up/down** switch stations (lasts the rest of the day, or until the Sheet's Music setting changes). **Play/pause** stops and starts it.
+- Music plays whenever the board is on (turn the TV off after school), and starts with the same OK press as the bell. It gets quieter while the bell rings.
+- Remote: **up/down** (or **rewind/fast-forward**) switch stations. A pick lasts the rest of the day, or until the Sheet's Music setting changes. **Play/pause** pauses only the music; the independent work bell still rings. A pause lasts until you press it again or the board reloads overnight.
 - SomaFM stations and KUSC also show the song playing. The others show just the station name.
 - Station links aren't official and can stop working. If one does, the board shows "(connecting)" and keeps retrying; pick another station.
 

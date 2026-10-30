@@ -1,7 +1,7 @@
 // Radio for the board. The Music row in the Settings tab picks a station
 // from the Stations tab (or "Off"). The remote's up/down arrows switch
-// stations for the rest of the day, and play/pause stops the music.
-// Music only plays from the first class to the end of the last class.
+// stations for the rest of the day, and play/pause stops the music (the bell
+// still rings).
 (function () {
   "use strict";
 
@@ -17,26 +17,13 @@
   let retryAt = 0;
   let lastProgress = 0; // last time the stream actually moved forward
   let song = "";        // "Title by Artist", when the station tells us
+  let ourChangeAt = 0;  // when this code last started or stopped the audio
 
   function readStore(key, fallback) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
   }
   function writeStore(key, value) {
     try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* ignore */ }
-  }
-
-  function minutesOf(hhmm) {
-    const [h, m] = hhmm.split(":").map(Number);
-    return h * 60 + m;
-  }
-
-  function schoolHours(d) {
-    const periods = window.boardPeriods ? window.boardPeriods(d) : [];
-    if (!periods.length) return false;
-    const mins = d.getHours() * 60 + d.getMinutes();
-    const start = Math.min(...periods.map((p) => minutesOf(p.start)));
-    const end = Math.max(...periods.map((p) => minutesOf(p.end)));
-    return mins >= start && mins < end;
   }
 
   function findStation(name, stations) {
@@ -63,6 +50,7 @@
   }
 
   function start(station) {
+    ourChangeAt = Date.now();
     const switching = !playing || playing.stream !== station.stream;
     playing = station;
     lastProgress = Date.now();
@@ -73,6 +61,7 @@
   }
 
   function stop() {
+    ourChangeAt = Date.now();
     playing = null;
     song = "";
     audio.pause();
@@ -83,6 +72,11 @@
   function renderNowPlaying() {
     const el = $("music-now");
     if (!el) return;
+    if (paused && unlocked) {
+      el.textContent = "\u266A Music paused";
+      el.classList.remove("hidden");
+      return;
+    }
     const show = playing && unlocked;
     const flowing = show && !audio.paused && Date.now() - lastProgress < 3000;
     const name = song ? `${song} · ${playing.name}` : playing.name; // song first, it gets cut off last
@@ -137,7 +131,7 @@
 
   // Checked every second: start, stop, or switch to match what's wanted.
   function update() {
-    const station = paused || !schoolHours(window.boardNow()) ? null : wantedStation();
+    const station = paused ? null : wantedStation();
     if (!station) {
       if (playing) stop();
     } else if (!playing || playing.stream !== station.stream) {
@@ -165,15 +159,33 @@
     update();
   }
 
+  // Pausing only stops the music. The bell plays separately and still rings.
+  function setPaused(value) {
+    if (paused === value) return;
+    paused = value;
+    if (window.boardToast) window.boardToast(paused ? "Music paused" : "Music on");
+    update();
+  }
+
+  // Remote buttons. Rewind and fast-forward also switch stations, in case
+  // the TV's browser keeps up/down for itself.
   window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp") cycleStation(1);
-    if (e.key === "ArrowDown") cycleStation(-1);
-    if (e.key === "MediaPlayPause" || e.keyCode === 179) {
-      paused = !paused;
-      if (window.boardToast) window.boardToast(paused ? "Music paused" : "Music on");
-      update();
-    }
+    if (e.key === "ArrowUp" || e.key === "MediaFastForward" || e.key === "MediaTrackNext") cycleStation(1);
+    if (e.key === "ArrowDown" || e.key === "MediaRewind" || e.key === "MediaTrackPrevious") cycleStation(-1);
+    if (e.key === "MediaPlayPause" || e.keyCode === 179) setPaused(!paused);
+    if (e.key === "MediaPause") setPaused(true);
+    if (e.key === "MediaPlay") setPaused(false);
   });
+
+  // Some browsers send the remote's media buttons here instead of as keys.
+  if ("mediaSession" in navigator) {
+    const on = (action, fn) => { try { navigator.mediaSession.setActionHandler(action, fn); } catch (e) { /* unsupported */ } };
+    on("play", () => setPaused(false));
+    on("pause", () => setPaused(true));
+    on("stop", () => setPaused(true));
+    on("nexttrack", () => cycleStation(1));
+    on("previoustrack", () => cycleStation(-1));
+  }
 
   // The same OK press that turns on the bell also turns on the music.
   // Any later press also restarts music the browser blocked or that froze.
@@ -192,7 +204,12 @@
   });
 
   audio.addEventListener("playing", () => { unlocked = true; renderNowPlaying(); });
-  audio.addEventListener("pause", renderNowPlaying);
+  // If the browser itself paused the music (say, from the remote), treat it
+  // as a pause instead of a dropped stream, so it doesn't restart on its own.
+  audio.addEventListener("pause", () => {
+    if (playing && !audio.error && !audio.ended && Date.now() - ourChangeAt > 1000) setPaused(true);
+    renderNowPlaying();
+  });
   audio.addEventListener("timeupdate", () => { lastProgress = Date.now(); });
   setInterval(update, 1000);
   setInterval(refreshSong, 30000);

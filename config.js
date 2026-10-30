@@ -46,7 +46,7 @@ const CONFIG = {
   eventDaysAhead: 30,
 
   // Music volume, from 0 (silent) to 1 (full). The TV's own volume still
-  // applies on top of this. Music only plays during the school day.
+  // applies on top of this.
   musicVolume: 0.6,
 
   // How often to check for new data, in minutes.
