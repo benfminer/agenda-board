@@ -14,7 +14,7 @@
 Privacy: anyone with the link can see the sheet. Use first names or initials in Notes.
 
 ## Using the Sheet day to day
-- **Agenda**: one row per item, with today's date. Items show in the order of the rows. You can add rows for future days ahead of time.
+- **Agenda**: one row per item. Leave the Date blank and the item shows every day until you delete it. Give it a date and it shows only on that day, so you can plan days ahead. Items show in the order of the rows.
 - **Notes**: shows until the end of the "Show until" date. Leave that blank to keep a note up until you delete it.
 - **Events**: only events in the next 30 days show up, with a countdown.
 - Dates can be typed like `11/4/2026`, `11/4`, or `2026-11-04`.

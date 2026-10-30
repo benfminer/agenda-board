@@ -300,9 +300,12 @@
 
   function renderAgenda(today) {
     const list = $("agenda-list");
+    // Rows with no date show every day; dated rows show only on that day.
     const items = (data ? data.agenda : []).filter((r) => {
+      if (!r.item) return false;
+      if (!r.date) return true;
       const d = parseDate(r.date);
-      return d && daysBetween(d, today) === 0 && r.item;
+      return d && daysBetween(d, today) === 0;
     });
     if (!items.length) {
       list.innerHTML = `<li class="empty">${isWeekend(today) ? "No school today. Enjoy your weekend!" : "Agenda coming soon."}</li>`;

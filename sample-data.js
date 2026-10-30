@@ -11,6 +11,7 @@ function sampleData(today) {
       { date: d(0), item: "Math Review #12" },
       { date: d(0), item: "Finish all maps and readings" },
       { date: d(1), item: "Tomorrow's item (should not show today)" },
+      { date: "", item: "No date, so it shows every day" },
     ],
     notes: [
       { note: "Alex out Nov 4-13", showuntil: d(14) },
