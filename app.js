@@ -296,12 +296,17 @@
   }
 
   // ---------- Schedule strip ----------
+  function hasIndependentWork(d) {
+    return !(CONFIG.noIndependentWorkDays || []).includes(d.getDay());
+  }
+
   function renderSchedule(d) {
     const mins = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
     const weekend = isWeekend(d);
+    const indepToday = hasIndependentWork(d);
     $("schedule").innerHTML = CONFIG.periods.map((p) => {
       const s = minutesOf(p.start), e = minutesOf(p.end);
-      const indepAt = e - CONFIG.independentWorkMinutes;
+      const indepAt = indepToday ? e - CONFIG.independentWorkMinutes : e;
       let cls = "", state = "";
       if (weekend) state = "";
       else if (mins < s) state = "Later";
@@ -369,7 +374,7 @@
 
   const rung = new Set();
   function checkBells(d) {
-    if (isWeekend(d)) return;
+    if (isWeekend(d) || !hasIndependentWork(d)) return;
     const mins = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
     const dayKey = d.toDateString();
     CONFIG.periods.forEach((p) => {

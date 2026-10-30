@@ -35,7 +35,7 @@ If you use the built-in Silk browser instead, press OK on the remote once after 
 
 ## Changing things later
 - Word and quote lists: `words.js` and `quotes.js`. Each school day moves to the next one, starting from `listStartDate` in `config.js`.
-- Period times and the bell: `periods` and `independentWorkMinutes` in `config.js`.
+- Period times and the bell: `periods` and `independentWorkMinutes` in `config.js`. Fridays have no bell or independent work time; change `noIndependentWorkDays` to adjust.
 - The TV reloads itself every night at 3 AM, so changes pushed to GitHub show up the next morning.
 
 ## Testing a specific time

@@ -24,6 +24,10 @@ const CONFIG = {
   ],
   independentWorkMinutes: 30,
 
+  // Days with no independent work time and no bell (0 = Sunday ... 5 = Friday).
+  // Fridays are math review and catch-up days.
+  noIndependentWorkDays: [5],
+
   // How long the "Independent work time" banner stays up, in seconds.
   bannerSeconds: 120,
 
