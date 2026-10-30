@@ -310,7 +310,12 @@
     if (!items.length) {
       list.innerHTML = `<li class="empty">${isWeekend(today) ? "No school today. Enjoy your weekend!" : "Agenda coming soon."}</li>`;
     } else {
-      list.innerHTML = items.map((r, i) => `<li><span class="num">${i + 1}</span><span>${escapeHtml(r.item)}</span></li>`).join("");
+      // Extra lines in a cell (Option+Enter) become smaller sub-points.
+      list.innerHTML = items.map((r, i) => {
+        const [first, ...rest] = r.item.split("\n").map((l) => l.trim()).filter(Boolean);
+        const subs = rest.map((l) => `<span class="sub">${escapeHtml(l)}</span>`).join("");
+        return `<li><span class="num">${i + 1}</span><span>${escapeHtml(first)}${subs ? `<span class="subs">${subs}</span>` : ""}</span></li>`;
+      }).join("");
     }
     fitText($("agenda-fit"), list);
   }
