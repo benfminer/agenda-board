@@ -10,8 +10,8 @@ const CONFIG = {
   // Weather location (92105, City Heights, San Diego).
   weather: { latitude: 32.74, longitude: -117.09, timezone: "America/Los_Angeles" },
 
-  // The first school day of the word and quote list (YYYY-MM-DD).
-  // Each weekday after this moves to the next word. Weekends are skipped.
+  // The first school day of the quote list (YYYY-MM-DD).
+  // Each weekday after this moves to the next quote. Weekends are skipped.
   listStartDate: "2026-10-30",
 
   // Class periods, in 24-hour time. The bell rings this many minutes

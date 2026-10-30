@@ -143,11 +143,6 @@
 
   function renderDaily(d) {
     const i = schoolDayIndex(d);
-    const w = WORDS[i % WORDS.length];
-    $("word").textContent = w.word;
-    $("word-pos").textContent = `(${w.pos})`;
-    $("word-def").textContent = w.definition;
-    $("word-ex").textContent = `"${w.example}"`;
     const q = QUOTES[i % QUOTES.length];
     $("quote-text").textContent = `"${q.text}"`;
     $("quote-author").textContent = q.author ? q.author : "";
@@ -347,13 +342,39 @@
     return ["🌡️", ""];
   }
 
+  // Five columns: day, picture, high/low, and chance of rain.
+  // The bar shows each day's temperature range on a shared scale.
+  function renderForecast(daily) {
+    const el = $("forecast");
+    if (!el) return;
+    const highs = daily.temperature_2m_max.map(Math.round);
+    const lows = daily.temperature_2m_min.map(Math.round);
+    const min = Math.min(...lows), max = Math.max(...highs);
+    const span = Math.max(max - min, 1);
+    el.innerHTML = daily.time.map((dateStr, i) => {
+      const [y, m, d] = dateStr.split("-").map(Number);
+      const day = i === 0 ? "Today" : new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short" });
+      const [icon, desc] = weatherLook(daily.weather_code[i], 1);
+      const rain = daily.precipitation_probability_max[i] || 0;
+      const left = ((lows[i] - min) / span) * 100;
+      const width = Math.max(((highs[i] - lows[i]) / span) * 100, 8);
+      return `<div class="fc-day${i === 0 ? " today" : ""}">`
+        + `<div class="fc-name">${day}</div>`
+        + `<div class="fc-icon" title="${desc}">${icon}</div>`
+        + `<div class="fc-temps"><span class="fc-hi">${highs[i]}°</span> <span class="fc-lo">${lows[i]}°</span></div>`
+        + `<div class="fc-range"><span style="left:${left}%;width:${width}%"></span></div>`
+        + `<div class="fc-rain${rain >= 40 ? " wet" : ""}">💧 ${rain}%</div>`
+        + `</div>`;
+    }).join("");
+  }
+
   async function refreshWeather() {
     const w = CONFIG.weather;
     const url = "https://api.open-meteo.com/v1/forecast"
       + `?latitude=${w.latitude}&longitude=${w.longitude}`
       + "&current=temperature_2m,weather_code,is_day"
-      + "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max"
-      + `&temperature_unit=fahrenheit&timezone=${encodeURIComponent(w.timezone)}&forecast_days=1`;
+      + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+      + `&temperature_unit=fahrenheit&timezone=${encodeURIComponent(w.timezone)}&forecast_days=5`;
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Weather returned ${res.status}`);
@@ -365,6 +386,7 @@
       $("w-icon").textContent = icon;
       $("w-temp").textContent = `${Math.round(j.current.temperature_2m)}°F`;
       $("w-desc").textContent = `${desc}  ·  High ${hi}° Low ${lo}°${rain >= 30 ? `  ·  ${rain}% rain` : ""}`;
+      renderForecast(j.daily);
     } catch (e) {
       console.warn("Weather load failed", e);
     }

@@ -150,13 +150,28 @@ h2 {
 .events-list li.soon .count { background: var(--amber); border-color: var(--amber); color: var(--ink); }
 
 /* Bottom */
+/* 5-day forecast */
+.forecast-days { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.8vw; }
+.fc-day {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.4vh; border-radius: 1.4vh; line-height: 1.1; text-align: center; min-height: 0;
+}
+.fc-name { font-size: 2.3vh; font-weight: 700; }
+.fc-icon { font-size: 4vh; line-height: 1; }
+.fc-temps { font-size: 2.6vh; }
+.fc-hi { font-weight: 700; }
+.fc-range { position: relative; width: 70%; height: 0.7vh; border-radius: 1vh; }
+.fc-range span { position: absolute; top: 0; bottom: 0; border-radius: 1vh; background: linear-gradient(90deg, #5aa9ff, #ffc857, #ff8a5b); }
+.fc-rain { font-size: 1.9vh; }
+.forecast { border-left: 1vh solid var(--amber); }
+.fc-day.today { background: #FFF4DC; }
+.fc-name { text-transform: uppercase; letter-spacing: 0.15vh; color: var(--slate); font-weight: 800; font-size: 2vh; }
+.fc-temps { font-weight: 600; }
+.fc-lo, .fc-rain { color: var(--ink-soft); }
+.fc-range { background: var(--line); }
+.fc-rain.wet { color: var(--slate); font-weight: 800; }
+
 .bottom { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--gap); min-height: 0; }
-.word { border-left: 1vh solid var(--amber); }
-.word-line { line-height: 1; margin-bottom: 0.8vh; }
-.word-text { font-family: "Instrument Serif", Georgia, serif; font-size: 6.2vh; }
-.word-pos { font-size: 2.2vh; font-weight: 700; color: var(--slate); margin-left: 0.6vw; text-transform: uppercase; letter-spacing: 0.2vh; }
-.word-def { font-size: 2.6vh; font-weight: 600; line-height: 1.25; }
-.word-ex { font-size: 2.2vh; color: var(--ink-soft); font-style: italic; margin-top: 0.6vh; line-height: 1.25; }
 
 .quote-text { font-family: "Instrument Serif", Georgia, serif; font-size: 3.6vh; line-height: 1.2; }
 .quote-author { font-size: 2vh; font-weight: 700; color: var(--amber); margin-top: 1vh; text-transform: uppercase; letter-spacing: 0.2vh; }

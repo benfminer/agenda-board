@@ -40,7 +40,7 @@ There are three looks: **Original**, **Trailhead**, and **Daylight**.
 If you use the built-in Silk browser instead, press OK on the remote once after the board loads to turn on the bell sound.
 
 ## Changing things later
-- Word and quote lists: `words.js` and `quotes.js`. Each school day moves to the next one, starting from `listStartDate` in `config.js`.
+- Quote list: `quotes.js`. Each school day moves to the next quote, starting from `listStartDate` in `config.js`. (The old Word of the Day list is in the git history if you ever want it back.)
 - Period times and the bell: `periods` and `independentWorkMinutes` in `config.js`. Fridays have no bell or independent work time; change `noIndependentWorkDays` to adjust.
 - The TV reloads itself every night at 3 AM, so changes pushed to GitHub show up the next morning.
 
