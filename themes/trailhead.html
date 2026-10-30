@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" data-board-theme="trailhead">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda Board: Trailhead</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="trailhead.css">
+</head>
+<body>
+  <div id="board">
+    <header class="hero">
+      <svg class="ridges" viewBox="0 0 1600 420" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#8BA8BD"/>
+            <stop offset="1" stop-color="#D9C9A8"/>
+          </linearGradient>
+        </defs>
+        <rect width="1600" height="420" fill="url(#sky)"/>
+        <circle cx="900" cy="150" r="42" fill="#FFAC00" opacity="0.9"/>
+        <g transform="translate(0 70)">
+        <path d="M0 260 L140 180 L260 230 L390 140 L520 210 L640 160 L780 240 L900 170 L1040 230 L1180 150 L1320 220 L1460 170 L1600 210 L1600 420 L0 420Z" fill="#9FA1B8" opacity="0.7"/>
+        <path d="M0 300 L120 250 L250 290 L380 220 L520 280 L660 230 L800 300 L950 240 L1090 290 L1230 230 L1380 280 L1500 250 L1600 270 L1600 420 L0 420Z" fill="#5D767D"/>
+        <path d="M0 350 L160 310 L310 345 L470 300 L640 350 L820 315 L980 355 L1150 310 L1320 350 L1480 320 L1600 340 L1600 420 L0 420Z" fill="#252826"/>
+        <rect y="410" width="1600" height="80" fill="#252826"/>
+        </g>
+      </svg>
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="eyebrow">Today is</div>
+          <div id="weekday" class="weekday"></div>
+          <div id="fulldate" class="fulldate"></div>
+        </div>
+        <div class="hero-right">
+          <div id="clock" class="clock"></div>
+          <div id="weather" class="weather">
+            <span class="weather-icon" id="w-icon"></span>
+            <span class="weather-temp" id="w-temp">--°</span>
+            <span class="weather-desc" id="w-desc">Loading weather</span>
+          </div>
+        </div>
+      </div>
+      <nav id="schedule" class="schedule"></nav>
+    </header>
+
+    <main class="middle">
+      <section class="card agenda">
+        <h2>Today's Agenda</h2>
+        <div class="fit" id="agenda-fit"><ol id="agenda-list" class="agenda-list"></ol></div>
+      </section>
+      <div class="side">
+        <section class="card notes">
+          <h2>Notes</h2>
+          <div class="fit" id="notes-fit"><ul id="notes-list" class="notes-list"></ul></div>
+        </section>
+        <section class="card events">
+          <h2>Coming Up</h2>
+          <div class="fit" id="events-fit"><ul id="events-list" class="events-list"></ul></div>
+        </section>
+      </div>
+    </main>
+
+    <section class="bottom">
+      <div class="card word">
+        <h2>Word of the Day</h2>
+        <div class="word-line"><span id="word" class="word-text"></span> <span id="word-pos" class="word-pos"></span></div>
+        <div id="word-def" class="word-def"></div>
+        <div id="word-ex" class="word-ex"></div>
+      </div>
+      <div class="card quote dark">
+        <h2>Quote of the Day</h2>
+        <div id="quote-text" class="quote-text"></div>
+        <div id="quote-author" class="quote-author"></div>
+      </div>
+    </section>
+  </div>
+
+  <div id="banner" class="banner hidden">
+    <div class="banner-eyebrow">Heads up</div>
+    <div class="banner-title">Independent Work Time</div>
+    <div id="banner-sub" class="banner-sub"></div>
+  </div>
+  <div id="sound-prompt" class="sound-prompt hidden">Press OK on the remote to turn on the bell sound</div>
+  <div id="status" class="status"></div>
+
+  <script src="../config.js"></script>
+  <script src="../words.js"></script>
+  <script src="../quotes.js"></script>
+  <script src="../sample-data.js"></script>
+  <script src="../app.js"></script>
+</body>
+</html>

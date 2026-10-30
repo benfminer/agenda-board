@@ -1,0 +1,186 @@
+/* Trailhead: calm, outdoorsy, editorial. Inspired by Rivian's design mood. */
+:root {
+  --bg: #F6F6F6;
+  --card: #FFFFFF;
+  --ink: #151515;
+  --ink-soft: #5b5f63;
+  --line: #E4E4E4;
+  --amber: #FFAC00;
+  --slate: #5D767D;
+  --dusk: #8BA8BD;
+  --forest: #252826;
+  --gap: 1.6vh;
+  --radius: 2.2vh;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--bg); color: var(--ink);
+  font-family: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  cursor: none;
+}
+
+#board {
+  width: 100vw; height: 100vh;
+  padding: 2vh 2vw;
+  display: grid;
+  grid-template-rows: 25vh 1fr 22vh;
+  gap: var(--gap);
+  transition: transform 2s ease;
+}
+
+h2 {
+  font-size: 1.9vh; font-weight: 800;
+  letter-spacing: 0.4vh; text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 1.4vh;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2vh 1.8vw;
+  display: flex; flex-direction: column;
+  min-height: 0; overflow: hidden;
+  box-shadow: 0 0.3vh 1.6vh rgba(21, 21, 21, 0.05);
+}
+.card.dark { background: var(--forest); color: #F6F6F6; }
+.card.dark h2 { color: var(--dusk); }
+.fit { flex: 1; min-height: 0; overflow: hidden; }
+.empty { color: var(--ink-soft); font-style: italic; }
+
+/* Hero */
+.hero {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  color: #fff;
+}
+.ridges { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-content {
+  position: relative;
+  height: 100%;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 2.6vh 2.4vw;
+}
+.eyebrow { font-size: 1.9vh; font-weight: 700; letter-spacing: 0.4vh; text-transform: uppercase; color: var(--forest); }
+.weekday {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 9.5vh; line-height: 0.95; color: var(--ink);
+}
+.fulldate { font-size: 2.6vh; font-weight: 600; color: var(--forest); margin-top: 0.4vh; }
+.hero-right { text-align: right; }
+.clock { font-size: 8vh; font-weight: 300; letter-spacing: -0.2vh; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.clock .ampm { font-size: 3vh; font-weight: 700; margin-left: 0.6vw; letter-spacing: 0.2vh; }
+.weather {
+  display: inline-flex; align-items: center; gap: 0.8vw;
+  margin-top: 1.4vh; padding: 0.8vh 1.4vw;
+  background: rgba(255, 255, 255, 0.7); color: var(--ink);
+  border-radius: 10vh; font-size: 2.2vh; font-weight: 600;
+}
+.weather-icon { font-size: 3vh; }
+.weather-temp { font-weight: 800; font-size: 2.8vh; }
+
+/* Period pills sit on the dark ridge line */
+.schedule {
+  position: absolute; left: 2.4vw; right: 2.4vw; bottom: 2vh;
+  display: flex; gap: 1vw;
+}
+.period {
+  flex: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1vh 1.4vw;
+  border-radius: 10vh;
+  border: 0.2vh solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+.period .range { font-size: 2.4vh; font-weight: 800; font-variant-numeric: tabular-nums; }
+.period .state { font-size: 1.8vh; font-weight: 600; opacity: 0.85; }
+.period.done { opacity: 0.4; }
+.period.class { background: #fff; color: var(--ink); border-color: #fff; }
+.period.indep { background: var(--amber); color: var(--ink); border-color: var(--amber); }
+
+/* Middle */
+.middle { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--gap); min-height: 0; }
+.side { display: grid; grid-template-rows: 1fr 1fr; gap: var(--gap); min-height: 0; }
+
+.agenda-list { list-style: none; font-size: 5vh; counter-reset: a; }
+.agenda-list li {
+  display: flex; align-items: baseline; gap: 1.6vw;
+  padding: 0.5em 0; line-height: 1.15; font-weight: 600;
+  border-bottom: 0.15vh solid var(--line);
+}
+.agenda-list li:last-child { border-bottom: none; }
+.agenda-list .num {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400; font-size: 1.25em;
+  color: var(--slate);
+  min-width: 0.9em;
+}
+
+.notes-list { list-style: none; font-size: 3.6vh; }
+.notes-list li {
+  display: flex; align-items: baseline; gap: 0.6em;
+  padding: 0.18em 0; line-height: 1.15; font-weight: 600;
+}
+.notes-list li:not(.empty)::before {
+  content: ""; flex: none;
+  width: 0.45em; height: 0.45em; border-radius: 50%;
+  background: var(--amber); transform: translateY(-0.1em);
+}
+
+.events-list { list-style: none; font-size: 3.2vh; }
+.events-list li {
+  display: grid; grid-template-columns: 3.6em 1fr auto;
+  gap: 0.8vw; align-items: center;
+  padding: 0.22em 0; line-height: 1.1; font-weight: 600;
+  border-bottom: 0.15vh solid var(--line);
+}
+.events-list li:last-child { border-bottom: none; }
+.events-list .when { color: var(--slate); font-weight: 800; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.1em; }
+.events-list .count {
+  font-size: 0.7em; font-weight: 800; white-space: nowrap;
+  padding: 0.25em 0.8em; border-radius: 2em;
+  border: 0.15vh solid var(--line); color: var(--ink-soft);
+}
+.events-list li.soon .count { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+
+/* Bottom */
+.bottom { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--gap); min-height: 0; }
+.word { border-left: 1vh solid var(--amber); }
+.word-line { line-height: 1; margin-bottom: 0.8vh; }
+.word-text { font-family: "Instrument Serif", Georgia, serif; font-size: 6.2vh; }
+.word-pos { font-size: 2.2vh; font-weight: 700; color: var(--slate); margin-left: 0.6vw; text-transform: uppercase; letter-spacing: 0.2vh; }
+.word-def { font-size: 2.6vh; font-weight: 600; line-height: 1.25; }
+.word-ex { font-size: 2.2vh; color: var(--ink-soft); font-style: italic; margin-top: 0.6vh; line-height: 1.25; }
+
+.quote-text { font-family: "Instrument Serif", Georgia, serif; font-size: 3.6vh; line-height: 1.2; }
+.quote-author { font-size: 2vh; font-weight: 700; color: var(--amber); margin-top: 1vh; text-transform: uppercase; letter-spacing: 0.2vh; }
+
+/* Bell banner */
+.banner {
+  position: fixed; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--ink); color: #fff;
+  padding: 4vh 4vw 4.4vh;
+  border-radius: 3vh;
+  border-top: 1.2vh solid var(--amber);
+  text-align: center;
+  box-shadow: 0 3vh 10vh rgba(0, 0, 0, 0.35);
+  animation: rise 0.5s ease-out;
+}
+.banner-eyebrow { font-size: 2.2vh; font-weight: 800; letter-spacing: 0.5vh; text-transform: uppercase; color: var(--amber); }
+.banner-title { font-family: "Instrument Serif", Georgia, serif; font-size: 10vh; line-height: 1.05; }
+.banner-sub { font-size: 3vh; font-weight: 600; margin-top: 1vh; opacity: 0.85; }
+@keyframes rise { from { transform: translate(-50%, -40%); opacity: 0; } }
+
+.sound-prompt {
+  position: fixed; top: 1vh; left: 50%; transform: translateX(-50%);
+  background: var(--ink); color: #fff;
+  padding: 1.4vh 2vw; border-radius: 10vh;
+  font-size: 2.4vh; font-weight: 600;
+}
+.status { position: fixed; right: 1vw; bottom: 0.4vh; font-size: 1.4vh; color: var(--ink-soft); }
+.status.warn { color: #b26b00; }
+.hidden { display: none; }

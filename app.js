@@ -9,10 +9,69 @@
     if (!isNaN(t)) timeOffset = t.getTime() - Date.now();
   }
   const now = () => new Date(Date.now() + timeOffset);
+  window.boardNow = now; // lets alternate views share the same clock
   const loadedAt = Date.now();
 
   const $ = (id) => document.getElementById(id);
   const DAY_MS = 86400000;
+
+  // ---------- Themes ----------
+  // Each look is its own page. The Sheet's Settings tab picks the default,
+  // and the remote's left/right arrows switch for the rest of the day.
+  const ROOT = new URL("./", document.currentScript.src);
+  const THEMES = [
+    { key: "original", name: "Original", path: "index.html" },
+    { key: "trailhead", name: "Trailhead", path: "themes/trailhead.html" },
+    { key: "daylight", name: "Daylight", path: "themes/daylight.html" },
+  ];
+  const currentTheme = document.documentElement.dataset.boardTheme || "original";
+  let sheetTheme = "original";
+
+  function readStore(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key) || "null") || fallback; } catch (e) { return fallback; }
+  }
+  function writeStore(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* storage unavailable */ }
+  }
+
+  function goToTheme(key) {
+    const theme = THEMES.find((t) => t.key === key) || THEMES[0];
+    if (theme.key === currentTheme) return;
+    try { sessionStorage.setItem("themeToast", theme.name); } catch (e) { /* ignore */ }
+    location.replace(new URL(theme.path, ROOT).href + location.search);
+  }
+
+  function wantedTheme() {
+    const o = readStore("themeOverride", null);
+    if (o && o.day === now().toDateString() && o.basedOn === sheetTheme) return o.theme;
+    return sheetTheme;
+  }
+
+  function cycleTheme(step) {
+    const i = THEMES.findIndex((t) => t.key === currentTheme);
+    const next = THEMES[(i + step + THEMES.length) % THEMES.length].key;
+    writeStore("themeOverride", { theme: next, basedOn: sheetTheme, day: now().toDateString() });
+    goToTheme(next);
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") cycleTheme(1);
+    if (e.key === "ArrowLeft") cycleTheme(-1);
+  });
+
+  function showThemeToast() {
+    let name = null;
+    try { name = sessionStorage.getItem("themeToast"); sessionStorage.removeItem("themeToast"); } catch (e) { /* ignore */ }
+    if (!name) return;
+    const t = document.createElement("div");
+    t.textContent = `${name} theme`;
+    t.style.cssText = "position:fixed;left:50%;top:45%;transform:translate(-50%,-50%);z-index:99;"
+      + "background:rgba(0,0,0,0.8);color:#fff;font:700 5vh/1.2 sans-serif;padding:2.4vh 3vw;"
+      + "border-radius:2vh;transition:opacity 0.6s;pointer-events:none";
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = "0"; }, 2000);
+    setTimeout(() => t.remove(), 2800);
+  }
 
   function startOfDay(d) {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -147,31 +206,47 @@
       const c = JSON.parse(localStorage.getItem("boardData") || "null");
       if (c && c.data) { data = c.data; lastUpdate = new Date(c.at); }
     } catch (e) { /* storage unavailable */ }
+    sheetTheme = readStore("sheetTheme", "original");
+  }
+
+  // Reads the Theme row from the Settings tab. If the tab doesn't exist,
+  // Google returns the first tab instead, which has no "setting" column.
+  function themeFromSettings(rows) {
+    const row = rows.find((r) => (r.setting || "").toLowerCase() === "theme");
+    const value = row ? (row.value || "").trim().toLowerCase() : "";
+    return THEMES.some((t) => t.key === value) ? value : "original";
   }
 
   async function refreshSheet() {
     const id = sheetId();
-    if (!id) {
+    if (!id || params.get("sample")) {
       data = sampleData(now());
       dataSource = "sample";
       renderData();
       return;
     }
     try {
-      const [agenda, notes, events] = await Promise.all([
+      const [agenda, notes, events, settings] = await Promise.all([
         fetchTab(id, CONFIG.tabs.agenda),
         fetchTab(id, CONFIG.tabs.notes),
         fetchTab(id, CONFIG.tabs.events),
+        fetchTab(id, CONFIG.tabs.settings).catch(() => []),
       ]);
       data = { agenda, notes, events };
       dataSource = "sheet";
       lastUpdate = new Date();
-      try { localStorage.setItem("boardData", JSON.stringify({ data, at: lastUpdate.getTime() })); } catch (e) { /* ignore */ }
+      sheetTheme = themeFromSettings(settings);
+      writeStore("sheetTheme", sheetTheme);
+      // A Sheet change cancels any earlier remote pick for good.
+      const o = readStore("themeOverride", null);
+      if (o && o.basedOn !== sheetTheme) writeStore("themeOverride", null);
+      writeStore("boardData", { data, at: lastUpdate.getTime() });
     } catch (e) {
       console.warn("Sheet load failed", e);
       dataSource = data ? "stale" : "error";
     }
     renderData();
+    goToTheme(wantedTheme());
   }
 
   function renderData() {
@@ -372,7 +447,8 @@
     bannerTimer = setTimeout(() => $("banner").classList.add("hidden"), CONFIG.bannerSeconds * 1000);
   }
 
-  const rung = new Set();
+  // Remembered across theme switches so the bell never rings twice.
+  const rung = new Set(readStore("bellsRung", []));
   function checkBells(d) {
     if (isWeekend(d) || !hasIndependentWork(d)) return;
     const mins = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
@@ -382,6 +458,7 @@
       const key = `${dayKey} ${at}`;
       if (mins >= at && mins < at + 1 && !rung.has(key)) {
         rung.add(key);
+        writeStore("bellsRung", [...rung].filter((k) => k.startsWith(dayKey)));
         ring(p);
       }
     });
@@ -417,6 +494,8 @@
   }
 
   loadCached();
+  if (sheetId() && !params.get("sample")) goToTheme(wantedTheme());
+  showThemeToast();
   tick();
   refreshSheet();
   refreshWeather();

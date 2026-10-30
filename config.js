@@ -5,7 +5,7 @@ const CONFIG = {
   sheetUrl: "https://docs.google.com/spreadsheets/d/1YUe5vWZbMZC_54jU0HRcJsj-ajtwBHXJNg2eTfFXskw/edit?usp=sharing",
 
   // Tab names in the Google Sheet. They must match exactly.
-  tabs: { agenda: "Agenda", notes: "Notes", events: "Events" },
+  tabs: { agenda: "Agenda", notes: "Notes", events: "Events", settings: "Settings" },
 
   // Weather location (92105, City Heights, San Diego).
   weather: { latitude: 32.74, longitude: -117.09, timezone: "America/Los_Angeles" },
