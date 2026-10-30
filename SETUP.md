@@ -1,64 +1,101 @@
-# Agenda Board Setup
+# Agenda Board Guide
 
-## 1. Make the Google Sheet
-1. Create a new Google Sheet with tabs named exactly **Agenda**, **Notes**, **Events**, **Settings**, and **Special Days**.
-2. Put these headers in row 1 of each tab (or import the files in `sheet-template/`):
-   - Agenda: `Date` | `Item`
-   - Notes: `Note` | `Show until`
-   - Events: `Date` | `Event`
-   - Settings: `Setting` | `Value` | `Until`, then rows `Theme` | `Original` and `Message` | (blank)
-   - Special Days: `Date` | `Schedule`
-3. Click **Share**, set General access to **Anyone with the link**, role **Viewer**. Copy the link.
-4. Paste the link into `config.js` as `sheetUrl`.
+The classroom agenda board runs on the Fire TV and reads everything from a Google Sheet.
 
-Privacy: anyone with the link can see the sheet. Use first names or initials in Notes.
+- **Live board:** https://benfminer.github.io/agenda-board/
+- **Google Sheet:** "ALC Agenda" (the link is in `config.js` as `sheetUrl`)
+- **Code:** https://github.com/benfminer/agenda-board
 
-## Using the Sheet day to day
-- **Agenda**: one row per item. Leave the Date blank and the item shows every day until you delete it. Give it a date and it shows only on that day, so you can plan days ahead. Items show in the order of the rows.
-- **Notes**: shows until the end of the "Show until" date. Leave that blank to keep a note up until you delete it.
-- **Events**: only events in the next 30 days show up, with a countdown.
-- Dates can be typed like `11/4/2026`, `11/4`, or `2026-11-04`.
-- The TV checks for changes every minute (Google can take a minute or two to publish an edit).
+## What's on the board
+- **Header:** day, date, clock, and current weather for 92105 (City Heights).
+- **Today's Agenda:** from the Agenda tab.
+- **Notes:** from the Notes tab.
+- **Coming Up:** events from the Events tab within the next 30 days, with a countdown.
+- **5-Day Forecast:** automatic, from the free Open-Meteo weather service.
+- **Quote of the Day:** automatic, from a built-in list of 180 quotes (`quotes.js`). A new one each school day.
+- **Period strip:** the day's periods with "Class time," "Independent work," or "Done."
+- **Bell:** a soft chime plus a big "Independent Work Time" banner 30 minutes before each period ends.
 
-## Picking the look (theme)
-There are three looks: **Original**, **Trailhead**, and **Daylight**.
-- **From the Sheet:** in the Settings tab, change the Value next to Theme. The TV switches within a few minutes. Tip: select that cell and use Insert > Dropdown with the three names so nobody has to type them.
-- **From the remote:** press left or right to flip through the looks right away. A remote pick lasts until the end of the day, then the board goes back to the Sheet's choice. Changing the Sheet always wins.
+## The Google Sheet
+The Sheet must be shared as **Anyone with the link: Viewer**. Anyone with the link can see it, so use first names, initials, or staff names only.
 
-## Announcements
-In the Settings tab, type your message next to **Message** (column B). It shows as a big strip across the top of the board. Put a date in column C (Until) to have it disappear after that day, or leave C blank and delete the message when you're done.
+Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Events**, **Settings**, **Special Days**. Starter files are in `sheet-template/`.
 
-## Minimum days and days off
-- Every **Wednesday** is automatically a minimum day (school ends at 12:00, no 12:00 to 2:00 period, no 1:30 bell).
-- For anything else, add a row to the **Special Days** tab: the date, then `Minimum`, `No School`, or `Regular`.
+### Agenda (`Date` | `Item`)
+- One row per item. Items show in row order.
+- **Leave the Date blank** and the item shows every day until you delete it.
+- **Give it a date** and it shows only on that day, so you can plan ahead.
+- **Sub-points:** start a new line inside the cell (Mac: Option + Enter, Windows/Chromebook: Ctrl + Enter). Extra lines show as smaller bullets under the item. No need to indent with spaces.
+- Emojis work.
+
+### Notes (`Note` | `Show until`)
+- Shows until the end of the "Show until" date. Leave it blank to keep a note up until you delete it.
+
+### Events (`Date` | `Event`)
+- Only events from today through the next 30 days show, soonest first, with "Today," "Tomorrow," or "in 12 days."
+
+### Settings (`Setting` | `Value` | `Until`)
+| Setting | Value | Until |
+|---|---|---|
+| Theme | Original, Trailhead, or Daylight (a dropdown works well) | |
+| Message | Announcement text, or blank for none | Optional last day to show it |
+
+- **Message:** shows as a big colored strip across the top. Meant for urgent announcements; the rest of the board shrinks a bit to make room. Put a date in Until to have it disappear after that day, or leave Until blank and delete the message when you're done.
+
+### Special Days (`Date` | `Schedule`)
+- **Every Wednesday is automatically a minimum day.** Nothing to enter.
+- Add a row only for exceptions. Schedule is a dropdown with:
   - `Minimum`: a special minimum Thursday, for example.
-  - `No School`: holidays and breaks. No bell, and the board says "No school today."
   - `Regular`: a Wednesday that runs a full day.
-- Fridays still have no independent work time or bell, whatever the schedule.
-- Period times live in `config.js` under `schedules`.
+  - `No School` also works, but isn't needed since the TV is off on those days.
 
-## 2. Put it on GitHub Pages
-1. Make a public GitHub repo and upload everything in this folder.
-2. In the repo go to **Settings > Pages**, choose **Deploy from a branch**, branch `main`, folder `/ (root)`.
-3. After a minute the board is live at `https://<your-username>.github.io/<repo-name>/`.
+### Typing dates
+`11/4/2026`, `11/4/26`, `11/4`, and `2026-11-04` all work.
 
-## 3. Set up the Fire TV
-1. On the Fire TV, install **Fully Kiosk Browser** (search the Amazon Appstore, or use the Downloader app if it is not listed).
-2. Set the Start URL to your GitHub Pages link.
-3. In Fully Kiosk settings:
-   - Web Content Settings: turn on **Autoplay Videos/Audio** (lets the bell play without pressing OK).
-   - Device Management: turn on **Keep Screen On** and **Launch on Boot**.
-4. Fire TV settings: **Display & Sounds > Screen Saver > Start Time: Never** if available.
+### How fast changes show up
+| What | How often |
+|---|---|
+| Sheet (agenda, notes, events, theme, message, special days) | Every minute, plus a minute or two for Google to publish the edit |
+| Weather and forecast | Every 30 minutes |
+| Quote | Once per school day |
+| Whole page reload (picks up code changes) | Every night at 3 AM |
 
-If you use the built-in Silk browser instead, press OK on the remote once after the board loads to turn on the bell sound.
+## The schedule
+| Day | Periods | Independent work bell |
+|---|---|---|
+| Regular (Mon, Tue, Thu) | 7:30-9:30, 8:00-10:00, 10:00-12:00, 12:00-2:00 | 9:00, 9:30, 11:30, 1:30 |
+| Minimum (every Wed, plus special days) | 7:30-9:30, 8:00-10:00, 10:00-12:00 | 9:00, 9:30, 11:30 |
+| Friday (math review) | Regular periods, all "Class time" | No bell |
 
-## Changing things later
-- Quote list: `quotes.js`. Each school day moves to the next quote, starting from `listStartDate` in `config.js`. (The old Word of the Day list is in the git history if you ever want it back.)
-- Period times and the bell: `periods` and `independentWorkMinutes` in `config.js`. Fridays have no bell or independent work time; change `noIndependentWorkDays` to adjust.
-- The TV reloads itself every night at 3 AM, so changes pushed to GitHub show up the next morning.
+On minimum days, the strip shows a "Minimum Day, out at 12:00" tag, and Daylight's timeline and sun shrink to fit the shorter day.
 
-## Testing a specific time
-Add `?now=` to the address, for example `?now=2026-11-02T08:59:55`, to see what the board does at that moment (handy for checking the bell).
+## The three looks
+- **Original:** dark navy, colorful section headings.
+- **Trailhead:** light, outdoorsy, mountain banner with period pills (Rivian-inspired).
+- **Daylight:** the sky changes color with the time of day, a sun travels across the school day, and a timeline replaces the period strip.
 
-## After changing code
-Bump the `?v=` number on the script and stylesheet links in `index.html` and the two `themes/` pages (all files use the same number). This makes the TV load the new code instead of an old saved copy.
+**Switching:**
+- **From the Sheet:** change Theme in the Settings tab. The TV follows within a couple of minutes.
+- **From the remote:** press left or right to flip through the looks instantly. A remote pick lasts the rest of the day; the next morning the board goes back to the Sheet's choice. Changing the Sheet always wins.
+
+## Fire TV setup (Toshiba 75C350NU, Silk browser)
+1. **Open the board in Silk:** go to https://benfminer.github.io/agenda-board/
+2. **Each morning, press OK once.** That turns on the bell sound and switches to full screen. The prompt at the top reminds you. Press OK again after a theme change, since switching looks reloads the page.
+3. **Screensaver off:** Home > Settings > Display & Audio > Screen Saver > Start Time > **Never**. Also check Display & Audio for a Power Controls or Sleep option and turn off any auto-off timer. The board also asks the TV to stay awake as a backup.
+4. **Quick access:** on the home screen, highlight Silk, press the Options button (three lines), and choose Move to put it at the front of the row. Silk reopens to the board.
+
+Fully Kiosk Browser was the original plan but isn't available in the Amazon Appstore, so Silk is the setup.
+
+## Troubleshooting
+- **Blank board, or an old layout:** the TV is using an old saved copy of a file. Refresh the page in Silk. (Every file link carries a version tag, which should prevent this; see below.)
+- **Toolbar showing:** press OK, or use Silk's menu (three lines) > full screen.
+- **Bell didn't sound:** someone needs to press OK after the page loads.
+- **Small yellow note in the corner, "Can't reach the Google Sheet":** check the Sheet's sharing is still "Anyone with the link." The board keeps showing the last info it got.
+- **Test any moment:** add `?now=` to the address, for example `https://benfminer.github.io/agenda-board/?now=2026-11-04T11:29:55`, to see exactly what the board does then (handy for the bell and minimum days). Add `?sample=1` to see sample data instead of the Sheet.
+
+## For code changes
+- Settings live in `config.js`: Sheet link, weather location, schedules (`schedules`, `weekdaySchedules`), bell timing (`independentWorkMinutes`), no-bell days (`noIndependentWorkDays`, Friday = 5), quote start date (`listStartDate`), and refresh timing.
+- Files: `index.html` + `style.css` (Original), `themes/trailhead.*`, `themes/daylight.*`, shared logic in `app.js`.
+- **After changing any file, bump the `?v=` number** on the script and stylesheet links in `index.html` and both `themes/` pages (all use the same number). Otherwise the TV may mix old and new files and break.
+- Pushing to `main` on GitHub publishes in about a minute. The TV picks it up at its 3 AM reload, or right away on refresh.
+- The old Word of the Day list is in the git history if you ever want it back.
