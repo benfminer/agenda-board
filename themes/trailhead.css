@@ -202,3 +202,17 @@ h2 {
 .status { position: fixed; right: 1vw; bottom: 0.4vh; font-size: 1.4vh; color: var(--ink-soft); }
 .status.warn { color: #b26b00; }
 .hidden { display: none; }
+
+/* Announcement strip (Message row in the Settings tab) */
+#board.has-msg { grid-template-rows: 25vh auto 1fr 22vh; }
+.announcement {
+  background: var(--amber); color: var(--ink);
+  border-radius: var(--radius); padding: 1.4vh 2vw;
+  font-size: 4vh; font-weight: 800; line-height: 1.2; text-align: center;
+  animation: rise 0.5s ease-out;
+}
+.announcement::before { content: "\1F4E3  "; }
+
+/* Minimum day and no-school pills */
+.period.min-day { background: rgba(255, 172, 0, 0.25); border-color: var(--amber); }
+.period.no-school { justify-content: center; }

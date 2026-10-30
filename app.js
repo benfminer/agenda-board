@@ -212,6 +212,36 @@
     return THEMES.some((t) => t.key === value) ? value : "original";
   }
 
+  // Reads the Message row from the Settings tab. Column C ("Until") is an
+  // optional last day to show it, like the Notes tab.
+  function messageFromSettings(rows) {
+    const row = rows.find((r) => (r.setting || "").toLowerCase() === "message");
+    return row && row.value ? { text: row.value, until: row.until || row.showuntil || "" } : null;
+  }
+
+  // ---------- Day types (Regular, Minimum, No School) ----------
+  // Special Days rows look like "11/25/2026 | Minimum" or "11/11/2026 | No School".
+  function dayType(d) {
+    if (isWeekend(d)) return "No School";
+    const today = startOfDay(d);
+    const row = ((data && data.special) || []).find((r) => {
+      const rd = parseDate(r.date);
+      return rd && daysBetween(rd, today) === 0;
+    });
+    const raw = row ? (row.schedule || row.type || row.daytype || "") : "";
+    const v = raw.toLowerCase().replace(/[^a-z]/g, "");
+    if (v.includes("noschool") || v.includes("holiday")) return "No School";
+    const named = Object.keys(CONFIG.schedules).find((k) => v.startsWith(k.toLowerCase()));
+    return named || CONFIG.weekdaySchedules[d.getDay()] || "Regular";
+  }
+
+  function periodsFor(d) {
+    const type = dayType(d);
+    return type === "No School" ? [] : (CONFIG.schedules[type] || CONFIG.schedules.Regular);
+  }
+  window.boardPeriods = periodsFor; // shared with the Daylight view
+  window.boardDayType = dayType;
+
   async function refreshSheet() {
     const id = sheetId();
     if (!id || params.get("sample")) {
@@ -221,13 +251,16 @@
       return;
     }
     try {
-      const [agenda, notes, events, settings] = await Promise.all([
+      // Optional tabs: if one is missing, Google sends the first tab instead,
+      // whose rows have no "setting"/"schedule" column and are ignored.
+      const [agenda, notes, events, settings, special] = await Promise.all([
         fetchTab(id, CONFIG.tabs.agenda),
         fetchTab(id, CONFIG.tabs.notes),
         fetchTab(id, CONFIG.tabs.events),
         fetchTab(id, CONFIG.tabs.settings).catch(() => []),
+        fetchTab(id, CONFIG.tabs.special).catch(() => []),
       ]);
-      data = { agenda, notes, events };
+      data = { agenda, notes, events, special, message: messageFromSettings(settings) };
       dataSource = "sheet";
       lastUpdate = new Date();
       sheetTheme = themeFromSettings(settings);
@@ -246,10 +279,23 @@
 
   function renderData() {
     const today = startOfDay(now());
+    safe(() => renderAnnouncement(today));
     safe(() => renderAgenda(today));
     safe(() => renderNotes(today));
     safe(() => renderEvents(today));
     safe(renderStatus);
+  }
+
+  // Big strip across the top, from the Message row in the Settings tab.
+  function renderAnnouncement(today) {
+    const el = $("announcement");
+    if (!el) return;
+    const m = data && data.message;
+    const until = m ? parseDate(m.until) : null;
+    const show = m && m.text && (!until || until >= today);
+    el.textContent = show ? m.text : "";
+    el.classList.toggle("hidden", !show);
+    $("board").classList.toggle("has-msg", !!show);
   }
 
   function renderAgenda(today) {
@@ -399,19 +445,24 @@
 
   function renderSchedule(d) {
     const mins = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
-    const weekend = isWeekend(d);
     const indepToday = hasIndependentWork(d);
-    $("schedule").innerHTML = CONFIG.periods.map((p) => {
+    const periods = periodsFor(d);
+    if (!periods.length) {
+      const msg = isWeekend(d) ? "Enjoy your weekend" : "No school today";
+      $("schedule").innerHTML = `<div class="period no-school"><div class="range">${msg}</div></div>`;
+      return;
+    }
+    const minimum = dayType(d) === "Minimum";
+    $("schedule").innerHTML = periods.map((p) => {
       const s = minutesOf(p.start), e = minutesOf(p.end);
       const indepAt = indepToday ? e - CONFIG.independentWorkMinutes : e;
       let cls = "", state = "";
-      if (weekend) state = "";
-      else if (mins < s) state = "Later";
+      if (mins < s) state = "Later";
       else if (mins < indepAt) { cls = "class"; state = "Class time"; }
       else if (mins < e) { cls = "indep"; state = "Independent work"; }
       else { cls = "done"; state = "Done"; }
       return `<div class="period ${cls}"><div class="range">${format12(s)} - ${format12(e)}</div><div class="state">${state}</div></div>`;
-    }).join("");
+    }).join("") + (minimum ? `<div class="period min-day"><div class="range">Minimum Day</div><div class="state">Out at ${format12(Math.max(...periods.map((p) => minutesOf(p.end))))}</div></div>` : "");
   }
 
   // ---------- Bell ----------
@@ -475,10 +526,10 @@
   // Remembered across theme switches so the bell never rings twice.
   const rung = new Set(readStore("bellsRung", []));
   function checkBells(d) {
-    if (isWeekend(d) || !hasIndependentWork(d)) return;
+    if (!hasIndependentWork(d)) return;
     const mins = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
     const dayKey = d.toDateString();
-    CONFIG.periods.forEach((p) => {
+    periodsFor(d).forEach((p) => {
       const at = minutesOf(p.end) - CONFIG.independentWorkMinutes;
       const key = `${dayKey} ${at}`;
       if (mins >= at && mins < at + 1 && !rung.has(key)) {

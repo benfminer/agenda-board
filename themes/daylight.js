@@ -39,9 +39,24 @@
 
   const mins = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
   const fmt = (m) => `${(Math.floor(m / 60) % 12) || 12}:${String(m % 60).padStart(2, "0")}`;
-  const periods = CONFIG.periods.map((p) => ({ s: mins(p.start), e: mins(p.end) }));
-  const dayStart = Math.min(...periods.map((p) => p.s));
-  const dayEnd = Math.max(...periods.map((p) => p.e));
+  const indepToday = (d) => !(CONFIG.noIndependentWorkDays || []).includes(d.getDay());
+
+  // Today's periods (Regular, Minimum, or none), split into two lanes so
+  // overlapping groups sit side by side.
+  function dayPlan(d) {
+    const periods = (window.boardPeriods ? window.boardPeriods(d) : CONFIG.schedules.Regular)
+      .map((p) => ({ s: mins(p.start), e: mins(p.end) }));
+    if (!periods.length) return null;
+    const lanes = [];
+    [...periods].sort((a, b) => a.s - b.s).forEach((p) => {
+      const lane = lanes.find((l) => l[l.length - 1].e <= p.s);
+      lane ? lane.push(p) : lanes.push([p]);
+    });
+    const start = Math.min(...periods.map((p) => p.s));
+    const end = Math.max(...periods.map((p) => p.e));
+    const type = window.boardDayType ? window.boardDayType(d) : "Regular";
+    return { lanes, start, end, type, pct: (m) => ((m - start) / (end - start)) * 100 };
+  }
 
   // Sun arc across the top, matching the school day.
   const arcPoint = (p) => [22 + 56 * p, 84 - 74 * Math.sin(Math.PI * p)];
@@ -52,17 +67,14 @@
   }
   $("arc-full").setAttribute("d", arcPath(1));
 
-  const isWeekend = (d) => d.getDay() === 0 || d.getDay() === 6;
-  const indepToday = (d) => !(CONFIG.noIndependentWorkDays || []).includes(d.getDay());
-
-  function paintSun(d, m) {
+  function paintSun(plan, m) {
     const sun = $("sun");
-    if (isWeekend(d) || m < dayStart || m > dayEnd) {
+    if (!plan || m < plan.start || m > plan.end) {
       sun.classList.add("off");
-      $("arc-done").setAttribute("d", m > dayEnd && !isWeekend(d) ? arcPath(1) : "");
+      $("arc-done").setAttribute("d", plan && m > plan.end ? arcPath(1) : "");
       return;
     }
-    const p = (m - dayStart) / (dayEnd - dayStart);
+    const p = (m - plan.start) / (plan.end - plan.start);
     const [x, y] = arcPoint(p);
     sun.classList.remove("off");
     sun.style.left = `${x}%`;
@@ -70,50 +82,44 @@
     $("arc-done").setAttribute("d", arcPath(p));
   }
 
-  function dayNote(d, m) {
-    if (isWeekend(d)) return "Enjoy your weekend";
-    if (m < dayStart) return `School starts at ${fmt(dayStart)}`;
-    if (m >= dayEnd) return "School's out. See you tomorrow!";
-    const left = Math.ceil(dayEnd - m);
-    return left <= 60 ? `${left} minutes left in the school day` : `${Math.floor(left / 60)} hr ${left % 60} min left in the school day`;
+  function dayNote(d, plan, m) {
+    if (!plan) return d.getDay() === 0 || d.getDay() === 6 ? "Enjoy your weekend" : "No school today";
+    const tag = plan.type === "Minimum" ? `Minimum day, out at ${fmt(plan.end)}` : "";
+    if (m < plan.start) return tag || `School starts at ${fmt(plan.start)}`;
+    if (m >= plan.end) return "School's out. See you tomorrow!";
+    const left = Math.ceil(plan.end - m);
+    const time = left <= 60 ? `${left} minutes left` : `${Math.floor(left / 60)} hr ${left % 60} min left`;
+    return tag ? `${tag} · ${time}` : `${time} in the school day`;
   }
 
-  // Two-lane timeline so overlapping groups sit side by side.
-  function lanes() {
-    const out = [];
-    [...periods].sort((a, b) => a.s - b.s).forEach((p) => {
-      const lane = out.find((l) => l[l.length - 1].e <= p.s);
-      lane ? lane.push(p) : out.push([p]);
-    });
-    return out;
-  }
-  const LANES = lanes();
-  const pct = (m) => ((m - dayStart) / (dayEnd - dayStart)) * 100;
-
-  function paintTimeline(d, m) {
-    const weekday = !isWeekend(d);
+  function paintTimeline(d, plan, m) {
+    if (!plan) {
+      $("timeline").innerHTML = `<div class="no-school">${dayNote(d, null, m)}</div>`;
+      return;
+    }
     const indep = indepToday(d);
-    let html = LANES.map((lane) => `<div class="lane">${lane.map((p) => {
+    let html = plan.lanes.map((lane) => `<div class="lane">${lane.map((p) => {
       const indepAt = indep ? p.e - CONFIG.independentWorkMinutes : p.e;
       let cls = "bar";
-      if (weekday && m >= p.e) cls += " past";
-      else if (weekday && m >= p.s) cls += " active" + (m >= indepAt ? " in-indep" : "");
+      if (m >= p.e) cls += " past";
+      else if (m >= p.s) cls += " active" + (m >= indepAt ? " in-indep" : "");
       const indepWidth = indep ? (CONFIG.independentWorkMinutes / (p.e - p.s)) * 100 : 0;
-      return `<div class="${cls}" style="left:${pct(p.s)}%;width:${pct(p.e) - pct(p.s)}%">`
+      return `<div class="${cls}" style="left:${plan.pct(p.s)}%;width:${plan.pct(p.e) - plan.pct(p.s)}%">`
         + (indepWidth ? `<div class="indep" style="width:${indepWidth}%"></div>` : "")
         + `<span class="label">${fmt(p.s)} - ${fmt(p.e)}</span></div>`;
     }).join("")}</div>`).join("");
-    if (weekday && m >= dayStart && m <= dayEnd) html += `<div class="now-line" style="left:${pct(m)}%"></div>`;
+    if (m >= plan.start && m <= plan.end) html += `<div class="now-line" style="left:${plan.pct(m)}%"></div>`;
     $("timeline").innerHTML = html;
   }
 
   function update() {
     const d = now();
     const m = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
+    const plan = dayPlan(d);
     paintSky(d);
-    paintSun(d, m);
-    paintTimeline(d, m);
-    $("day-note").textContent = dayNote(d, m);
+    paintSun(plan, m);
+    paintTimeline(d, plan, m);
+    $("day-note").textContent = dayNote(d, plan, m);
   }
 
   update();

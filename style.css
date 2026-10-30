@@ -242,3 +242,19 @@ h2 {
 .status.warn { color: var(--events); opacity: 1; }
 
 .hidden { display: none; }
+
+/* Announcement strip (Message row in the Settings tab) */
+#board.has-msg { grid-template-rows: auto auto 1fr 24vh 9vh; }
+.announcement {
+  background: var(--events); color: var(--bg);
+  border-radius: 1.6vh; padding: 1.4vh 2vw;
+  font-size: 4.2vh; font-weight: 700; line-height: 1.2; text-align: center;
+  animation: pop 0.4s ease-out;
+}
+.announcement::before { content: "\1F4E3  "; }
+
+/* Minimum day and no-school cells in the schedule strip */
+.period.min-day { border-color: var(--events); }
+.period.min-day .range { color: var(--events); }
+.period.no-school { grid-column: 1 / -1; }
+.period.no-school .range { color: var(--muted); }

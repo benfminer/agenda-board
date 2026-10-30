@@ -1,12 +1,13 @@
 # Agenda Board Setup
 
 ## 1. Make the Google Sheet
-1. Create a new Google Sheet with tabs named exactly **Agenda**, **Notes**, **Events**, and **Settings**.
+1. Create a new Google Sheet with tabs named exactly **Agenda**, **Notes**, **Events**, **Settings**, and **Special Days**.
 2. Put these headers in row 1 of each tab (or import the files in `sheet-template/`):
    - Agenda: `Date` | `Item`
    - Notes: `Note` | `Show until`
    - Events: `Date` | `Event`
-   - Settings: `Setting` | `Value`, then a row with `Theme` | `Original`
+   - Settings: `Setting` | `Value` | `Until`, then rows `Theme` | `Original` and `Message` | (blank)
+   - Special Days: `Date` | `Schedule`
 3. Click **Share**, set General access to **Anyone with the link**, role **Viewer**. Copy the link.
 4. Paste the link into `config.js` as `sheetUrl`.
 
@@ -23,6 +24,18 @@ Privacy: anyone with the link can see the sheet. Use first names or initials in 
 There are three looks: **Original**, **Trailhead**, and **Daylight**.
 - **From the Sheet:** in the Settings tab, change the Value next to Theme. The TV switches within a few minutes. Tip: select that cell and use Insert > Dropdown with the three names so nobody has to type them.
 - **From the remote:** press left or right to flip through the looks right away. A remote pick lasts until the end of the day, then the board goes back to the Sheet's choice. Changing the Sheet always wins.
+
+## Announcements
+In the Settings tab, type your message next to **Message** (column B). It shows as a big strip across the top of the board. Put a date in column C (Until) to have it disappear after that day, or leave C blank and delete the message when you're done.
+
+## Minimum days and days off
+- Every **Wednesday** is automatically a minimum day (school ends at 12:00, no 12:00 to 2:00 period, no 1:30 bell).
+- For anything else, add a row to the **Special Days** tab: the date, then `Minimum`, `No School`, or `Regular`.
+  - `Minimum`: a special minimum Thursday, for example.
+  - `No School`: holidays and breaks. No bell, and the board says "No school today."
+  - `Regular`: a Wednesday that runs a full day.
+- Fridays still have no independent work time or bell, whatever the schedule.
+- Period times live in `config.js` under `schedules`.
 
 ## 2. Put it on GitHub Pages
 1. Make a public GitHub repo and upload everything in this folder.
