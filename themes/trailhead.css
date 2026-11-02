@@ -84,8 +84,9 @@ h2 {
 .weather-temp { font-weight: 800; font-size: 2.8vh; }
 
 /* Middle */
-.middle { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--gap); min-height: 0; }
-.side { display: grid; grid-template-rows: 1fr 1fr; gap: var(--gap); min-height: 0; }
+.middle { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--gap); min-height: 0; }
+/* Notes take only the room they need (up to 45%), so Coming Up gets the rest */
+.side { display: grid; grid-template-rows: fit-content(45%) 1fr; gap: var(--gap); min-height: 0; }
 
 .agenda-list { list-style: none; font-size: 5vh; counter-reset: a; }
 .agenda-list li {
@@ -101,7 +102,10 @@ h2 {
   min-width: 0.9em;
 }
 
-.notes-list { list-style: none; font-size: 3.6vh; }
+.notes-list { list-style: none; font-size: 3vh; }
+.notes-list .empty { font-size: 0.7em; }
+/* Sized by its notes (not stretched), but can still shrink when it hits the 45% limit */
+.notes .fit { flex: 0 1 auto; }
 .notes-list li {
   display: flex; align-items: baseline; gap: 0.6em;
   padding: 0.18em 0; line-height: 1.15; font-weight: 600;
@@ -148,7 +152,7 @@ h2 {
 .fc-lo, .fc-rain, .fc-desc { color: var(--ink-soft); }
 .fc-rain.wet { color: var(--slate); font-weight: 800; }
 
-.bottom { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--gap); min-height: 0; }
+.bottom { display: grid; grid-template-columns: 1.2fr 1fr; gap: var(--gap); min-height: 0; }
 
 .quote-text { font-family: "Instrument Serif", Georgia, serif; font-size: 3.6vh; line-height: 1.2; }
 .quote-author { font-size: 2vh; font-weight: 700; color: var(--amber); margin-top: 1vh; text-transform: uppercase; letter-spacing: 0.2vh; }

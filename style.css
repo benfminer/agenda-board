@@ -73,13 +73,14 @@ h2 {
 /* Middle */
 .middle {
   display: grid;
-  grid-template-columns: 1.55fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: var(--gap);
   min-height: 0;
 }
+/* Notes take only the room they need (up to 45%), so Coming Up gets the rest */
 .side {
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: fit-content(45%) 1fr;
   gap: var(--gap);
   min-height: 0;
 }
@@ -113,11 +114,15 @@ h2 {
 .empty { color: var(--muted); font-style: italic; }
 
 .notes h2 { color: var(--notes); }
-.notes-list { list-style: none; font-size: 4.2vh; }
+.notes-list .empty { font-size: 0.7em; }
+/* Sized by its notes (not stretched), but can still shrink when it hits the 45% limit */
+.notes .fit { flex: 0 1 auto; }
+.notes-list li:last-child { margin-bottom: 0; }
+.notes-list { list-style: none; font-size: 3.2vh; }
 .notes-list li {
-  padding: 0.35em 0 0.35em 0.8em;
+  padding: 0.1em 0 0.1em 0.8em;
   border-left: 0.5vh solid var(--notes);
-  margin-bottom: 0.5em;
+  margin-bottom: 0.35em;
   line-height: 1.2;
 }
 
@@ -166,7 +171,7 @@ h2 {
 
 .bottom {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: var(--gap);
   min-height: 0;
 }
