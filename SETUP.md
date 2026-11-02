@@ -11,7 +11,7 @@ The classroom agenda board runs on the Fire TV and reads everything from a Googl
 - **Today's Agenda:** from the Agenda tab.
 - **Notes:** from the Notes tab.
 - **Coming Up:** events from the Events tab within the next 30 days, with a countdown.
-- **5-Day Forecast:** automatic, from the free Open-Meteo weather service. Today's picture is the weather right now (matching the top); the other days show their forecast. The chance of rain shows only when it's 30% or more.
+- **5-Day Forecast:** automatic, from the free Open-Meteo weather service. Each day shows a picture and a word (Sunny, Cloudy, Foggy, Rain...). Today's is the weather right now (matching the top); the other days show their forecast. The chance of rain shows only when it's 30% or more.
 - **Quote of the Day:** automatic, from a built-in list of 180 quotes (`quotes.js`). A new one each school day.
 - **Music:** radio from the station picked in the Settings tab. The station (and song, when known) shows under the quote.
 - **In the News:** headlines with a short summary from the News tab (News in Levels and NPR) along the bottom, one at a time, changing every 20 seconds. Hidden if the tab is missing or empty.

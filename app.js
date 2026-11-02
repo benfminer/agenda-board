@@ -494,8 +494,8 @@
 
   // ---------- Weather (Open-Meteo, no key needed) ----------
   function weatherLook(code, isDay) {
-    if (code === 0) return [isDay ? "☀️" : "🌙", "Clear"];
-    if (code === 1) return [isDay ? "🌤️" : "🌙", "Mostly clear"];
+    if (code === 0) return isDay ? ["☀️", "Sunny"] : ["🌙", "Clear"];
+    if (code === 1) return isDay ? ["🌤️", "Mostly sunny"] : ["🌙", "Mostly clear"];
     if (code === 2) return ["⛅", "Partly cloudy"];
     if (code === 3) return ["☁️", "Cloudy"];
     if (code === 45 || code === 48) return ["☁️", "Foggy"]; // Silk can't draw the fog emoji
@@ -508,7 +508,7 @@
     return ["🌡️", ""];
   }
 
-  // Five columns: day, picture, high/low, and chance of rain.
+  // Five columns: day, picture and word (Sunny, Cloudy...), high/low, and chance of rain.
   // Rain only shows at 30% or more, same as the line at the top.
   // Today's picture is the weather right now, so it matches the top. (The
   // day's forecast picture is its worst weather, like early morning fog.)
@@ -524,7 +524,8 @@
       const rain = daily.precipitation_probability_max[i] || 0;
       return `<div class="fc-day${i === 0 ? " today" : ""}">`
         + `<div class="fc-name">${day}</div>`
-        + `<div class="fc-icon" title="${desc}">${icon}</div>`
+        + `<div class="fc-icon">${icon}</div>`
+        + `<div class="fc-desc">${desc}</div>`
         + `<div class="fc-temps"><span class="fc-hi">${highs[i]}°</span> <span class="fc-lo">${lows[i]}°</span></div>`
         + `<div class="fc-rain${rain >= 40 ? " wet" : ""}">${rain >= 30 ? `💧 ${rain}%` : "&nbsp;"}</div>`
         + `</div>`;
