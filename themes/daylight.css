@@ -145,8 +145,8 @@ h2 {
 
 .notes h2 { color: var(--mint); }
 .notes-list { list-style: none; font-size: 3vh; }
-.notes-list .empty { font-size: 0.7em; }
 /* Sized by its notes (not stretched), but can still shrink when it hits the 45% limit */
+.side.no-notes { grid-template-rows: 1fr; }
 .notes .fit { flex: 0 1 auto; }
 .notes-list li { padding: 0.15em 0; line-height: 1.15; }
 .notes-list li:not(.empty)::before { content: "\2192"; color: var(--mint); margin-right: 0.5em; }

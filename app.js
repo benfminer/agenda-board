@@ -439,9 +439,11 @@
       const until = parseDate(r.showuntil);
       return !until || until >= today;
     });
-    list.innerHTML = notes.length
-      ? notes.map((r) => `<li>${escapeHtml(r.note)}</li>`).join("")
-      : `<li class="empty" style="border:none">No notes today.</li>`;
+    // No notes: hide the card so Coming Up gets the whole column.
+    const card = list.closest(".notes");
+    card.classList.toggle("hidden", !notes.length);
+    card.parentElement.classList.toggle("no-notes", !notes.length);
+    list.innerHTML = notes.map((r) => `<li>${escapeHtml(r.note)}</li>`).join("");
     fitText($("notes-fit"), list);
   }
 

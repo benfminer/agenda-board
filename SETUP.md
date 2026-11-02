@@ -9,7 +9,7 @@ The classroom agenda board runs on the Fire TV and reads everything from a Googl
 ## What's on the board
 - **Header:** day, date, clock, and current weather for 92105 (City Heights).
 - **Today's Agenda:** from the Agenda tab.
-- **Notes:** from the Notes tab.
+- **Notes:** from the Notes tab. Hidden when there are no notes, so Coming Up gets the space.
 - **Coming Up:** events from the Events tab within the next 30 days, with a countdown.
 - **5-Day Forecast:** automatic, from the free Open-Meteo weather service. Each day shows a picture and a word (Sunny, Cloudy, Foggy, Rain...). Today's is the weather right now (matching the top); the other days show their forecast. The chance of rain shows only when it's 30% or more.
 - **Quote of the Day:** automatic, from a built-in list of 180 quotes (`quotes.js`). A new one each school day.

@@ -114,8 +114,8 @@ h2 {
 .empty { color: var(--muted); font-style: italic; }
 
 .notes h2 { color: var(--notes); }
-.notes-list .empty { font-size: 0.7em; }
 /* Sized by its notes (not stretched), but can still shrink when it hits the 45% limit */
+.side.no-notes { grid-template-rows: 1fr; }
 .notes .fit { flex: 0 1 auto; }
 .notes-list li:last-child { margin-bottom: 0; }
 .notes-list { list-style: none; font-size: 3.2vh; }
