@@ -1,0 +1,35 @@
+/* Pastel: a light, calm page with soft colored cards and rounded corners.
+   Builds on ../style.css and only changes the look. */
+:root {
+  --bg: #f6f3ee;
+  --card: #ffffff;
+  --border: rgba(58, 58, 70, 0.1);
+  --text: #3a3a46;
+  --muted: #6c6c78;
+  --agenda: #c4566b;
+  --notes: #4a7fb8;
+  --events: #b5701f;
+  --word: #4f8f6e;
+  --quote: #8a6bbf;
+  --indep: #ffb37a;
+}
+
+.card { border: none; border-radius: 2.6vh; box-shadow: 0 0.8vh 2.4vh rgba(58, 58, 70, 0.08); }
+.agenda { background: #fde8e4; }
+.notes { background: #e3eefb; }
+.events { background: #fff4d6; }
+.forecast { background: #e4f2ea; }
+.quote { background: #efe7fb; }
+
+h2, .weekday, .clock { font-family: "Nunito", "Atkinson Hyperlegible", sans-serif; font-weight: 800; }
+h2 { text-transform: none; letter-spacing: 0; font-size: 2.8vh; }
+.agenda h2 { font-size: 3.4vh; }
+.agenda-list .num { color: #fff; }
+
+.fc-day { background: rgba(255, 255, 255, 0.55); border-radius: 1.8vh; }
+.fc-day.today { background: #ffffff; box-shadow: inset 0 0 0 0.25vh var(--word); }
+.news-label { color: #fff; border-radius: 10vh; padding: 0.6vh 1.2vw; }
+.announcement { color: #fff; border-radius: 2.6vh; }
+.events-list li.soon .count { color: #fff; }
+.sound-prompt { background: #fff; color: var(--text); box-shadow: 0 0.8vh 2.4vh rgba(58, 58, 70, 0.15); }
+.banner { border-radius: 3vh; }

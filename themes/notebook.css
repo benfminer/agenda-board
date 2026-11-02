@@ -1,0 +1,41 @@
+/* Notebook: ruled paper with a red margin line and sticky-note cards.
+   Builds on ../style.css and only changes the look. */
+:root {
+  --bg: #fbf7ec;
+  --card: #fff8c9;
+  --border: rgba(60, 50, 30, 0.15);
+  --text: #26262e;
+  --muted: #5d5d68;
+  --agenda: #c0392b;
+  --notes: #1f6fb2;
+  --events: #a35f00;
+  --word: #2e7d4f;
+  --quote: #7b4bb7;
+  --indep: #ffa94d;
+}
+
+html, body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(to right, transparent 1.2vw, #e59a9a 1.2vw, #e59a9a calc(1.2vw + 0.3vh), transparent calc(1.2vw + 0.3vh)),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 3.7vh, #c8d9ee 3.7vh, #c8d9ee 3.9vh);
+}
+
+.card { border: none; border-radius: 0.4vh; box-shadow: 0 0.6vh 1.6vh rgba(60, 50, 30, 0.18); }
+.agenda { background: #fff3a8; }
+.notes { background: #d6ecff; }
+.events { background: #ffd6e0; }
+.forecast { background: #dff5d8; }
+.quote { background: #ece0ff; }
+.news { background: #ffffff; }
+
+h2, .weekday { font-family: "Permanent Marker", "Atkinson Hyperlegible", sans-serif; font-weight: 400; letter-spacing: 0.1vh; }
+h2 { font-size: 2.7vh; }
+.agenda h2 { font-size: 3.3vh; }
+.weekday { font-size: 6vh; }
+
+.fc-day { background: rgba(255, 255, 255, 0.5); }
+.fc-day.today { background: rgba(255, 255, 255, 0.85); box-shadow: inset 0 0 0 0.25vh var(--word); }
+.news-label { color: #fff; }
+.sound-prompt { background: #fff; color: var(--text); }
+.status { color: var(--muted); }

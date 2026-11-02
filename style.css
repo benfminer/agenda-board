@@ -181,6 +181,11 @@ h2 {
 .quote-author { font-size: 2.5vh; color: var(--quote); margin-top: 0.8vh; }
 .music-now { margin-top: auto; align-self: flex-start; max-width: 100%; padding: 0.5vh 1vw; border: 0.2vh solid currentColor; border-radius: 10vh; font-size: 2.2vh; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* Music and Look buttons under the quote */
+.board-controls { margin-top: auto; display: flex; gap: 0.8vw; min-width: 0; padding-top: 1vh; }
+.board-controls .music-now { margin-top: 0; }
+.board-controls .theme-btn { flex-shrink: 0; }
+
 /* News bar: one headline at a time from the News tab */
 .news {
   height: 16vh;

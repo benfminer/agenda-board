@@ -158,6 +158,11 @@ h2 {
 .quote-author { font-size: 2vh; font-weight: 700; color: var(--amber); margin-top: 1vh; text-transform: uppercase; letter-spacing: 0.2vh; }
 .music-now { margin-top: auto; align-self: flex-start; max-width: 100%; padding: 0.5vh 1vw; border: 0.2vh solid currentColor; border-radius: 10vh; font-size: 2vh; color: rgba(246, 246, 246, 0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* Music and Look buttons under the quote */
+.board-controls { margin-top: auto; display: flex; gap: 0.8vw; min-width: 0; padding-top: 1vh; }
+.board-controls .music-now { margin-top: 0; }
+.board-controls .theme-btn { flex-shrink: 0; }
+
 /* Bell banner */
 .banner {
   position: fixed; left: 50%; top: 50%;

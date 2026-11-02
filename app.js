@@ -17,12 +17,16 @@
 
   // ---------- Themes ----------
   // Each look is its own page. The Sheet's Settings tab picks the default,
-  // and the remote's left/right arrows switch for the rest of the day.
+  // and the Look button (or left/right on a keyboard) switches for the rest
+  // of the day.
   const ROOT = new URL("./", document.currentScript.src);
   const THEMES = [
     { key: "original", name: "Original", path: "index.html" },
     { key: "trailhead", name: "Trailhead", path: "themes/trailhead.html" },
-    { key: "daylight", name: "Daylight", path: "themes/daylight.html" },
+    { key: "chalkboard", name: "Chalkboard", path: "themes/chalkboard.html" },
+    { key: "notebook", name: "Notebook", path: "themes/notebook.html" },
+    { key: "departure", name: "Departure Board", path: "themes/departure.html" },
+    { key: "pastel", name: "Pastel", path: "themes/pastel.html" },
   ];
   const currentTheme = document.documentElement.dataset.boardTheme || "original";
   let sheetTheme = "original";
@@ -47,11 +51,80 @@
     return sheetTheme;
   }
 
+  // A look picked on the TV lasts the rest of the day, or until the Sheet's
+  // Theme setting changes.
+  function pickTheme(key) {
+    writeStore("themeOverride", { theme: key, basedOn: sheetTheme, day: now().toDateString() });
+    goToTheme(key);
+  }
+
   function cycleTheme(step) {
     const i = THEMES.findIndex((t) => t.key === currentTheme);
-    const next = THEMES[(i + step + THEMES.length) % THEMES.length].key;
-    writeStore("themeOverride", { theme: next, basedOn: sheetTheme, day: now().toDateString() });
-    goToTheme(next);
+    pickTheme(THEMES[(i + step + THEMES.length) % THEMES.length].key);
+  }
+
+  // ---------- Pick lists ----------
+  // Silk keeps the remote's arrows for its pointer, so choices are lists you
+  // point at and click with OK. Used for the look here and music in music.js.
+  const PICKER_SECONDS = 30; // closes on its own if nobody picks
+  let pickerTimer = 0;
+  const pickerStyle = document.createElement("style");
+  pickerStyle.textContent = `
+    .music-now { cursor: pointer; }
+    #board-picker { position: fixed; inset: 0; z-index: 98; display: flex; align-items: center;
+      justify-content: center; background: rgba(0, 0, 0, 0.55); }
+    #board-picker .panel { background: #1b2233; color: #fff; border-radius: 2vh; padding: 3vh 2.5vw;
+      box-shadow: 0 2vh 8vh rgba(0, 0, 0, 0.6);
+      font-family: "Atkinson Hyperlegible", "Segoe UI", Roboto, Arial, sans-serif; }
+    #board-picker h3 { font-size: 3.4vh; margin: 0 0 2vh; }
+    #board-picker .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vh 1vw; }
+    #board-picker button { font: inherit; font-size: 2.6vh; text-align: left; color: #fff; cursor: pointer;
+      background: rgba(255, 255, 255, 0.08); border: 0.25vh solid transparent; border-radius: 1.2vh;
+      padding: 1.2vh 1.2vw; }
+    #board-picker button.current { border-color: #ffc857; background: rgba(255, 200, 87, 0.18); }`;
+  document.head.appendChild(pickerStyle);
+
+  // items: [{ label, value }]. The current one is outlined.
+  function openPicker(title, items, current, onPick) {
+    closePicker();
+    const picker = document.createElement("div");
+    picker.id = "board-picker";
+    picker.innerHTML = `<div class="panel"><h3></h3><div class="grid"></div></div>`;
+    picker.querySelector("h3").textContent = title;
+    items.forEach((item) => {
+      const b = document.createElement("button");
+      b.textContent = item.label;
+      if (item.value === current) b.className = "current";
+      b.addEventListener("click", () => { closePicker(); onPick(item.value); });
+      picker.querySelector(".grid").appendChild(b);
+    });
+    picker.addEventListener("click", (e) => { if (e.target === picker) closePicker(); }); // click outside the list
+    document.body.appendChild(picker);
+    pickerTimer = setTimeout(closePicker, PICKER_SECONDS * 1000);
+  }
+
+  function closePicker() {
+    clearTimeout(pickerTimer);
+    const picker = document.getElementById("board-picker");
+    if (picker) picker.remove();
+  }
+  window.boardPicker = openPicker;
+
+  // The Look button sits next to the music button under the quote.
+  function addLookButton() {
+    const music = $("music-now");
+    if (!music) return;
+    const row = document.createElement("div");
+    row.className = "board-controls";
+    music.parentNode.insertBefore(row, music);
+    row.appendChild(music);
+    const btn = document.createElement("div");
+    btn.className = "music-now theme-btn";
+    btn.textContent = `Look: ${(THEMES.find((t) => t.key === currentTheme) || THEMES[0]).name}`;
+    btn.addEventListener("click", () => openPicker("Pick a look",
+      THEMES.map((t) => ({ label: t.name, value: t.key })), currentTheme, pickTheme));
+    row.appendChild(btn);
+    fitQuote();
   }
 
   window.addEventListener("keydown", (e) => {
@@ -152,6 +225,13 @@
     const q = QUOTES[i % QUOTES.length];
     $("quote-text").textContent = `"${q.text}"`;
     $("quote-author").textContent = q.author ? q.author : "";
+    fitQuote();
+  }
+
+  // Long quotes shrink so the buttons under them stay on screen.
+  function fitQuote() {
+    const text = $("quote-text");
+    if (text) fitText(text.closest(".card"), text);
   }
 
   // ---------- Google Sheet data ----------
@@ -215,7 +295,8 @@
   function themeFromSettings(rows) {
     const row = rows.find((r) => (r.setting || "").toLowerCase() === "theme");
     const value = row ? (row.value || "").trim().toLowerCase() : "";
-    return THEMES.some((t) => t.key === value) ? value : "original";
+    const theme = THEMES.find((t) => t.key === value || t.name.toLowerCase() === value); // "Departure Board" or "departure"
+    return theme ? theme.key : "original";
   }
 
   // Reads the Message row from the Settings tab. Column C ("Until") is an
@@ -312,8 +393,6 @@
     const type = dayType(d);
     return type === "No School" ? [] : (CONFIG.schedules[type] || CONFIG.schedules.Regular);
   }
-  window.boardPeriods = periodsFor; // shared with the Daylight view
-  window.boardDayType = dayType;
 
   async function refreshSheet() {
     const id = sheetId();
@@ -682,6 +761,7 @@
   safe(loadCached);
   safe(() => { if (sheetId() && !params.get("sample")) goToTheme(wantedTheme()); });
   safe(showThemeToast);
+  safe(addLookButton);
   keepAwake();
   tick();
   refreshSheet();
@@ -691,7 +771,9 @@
   setInterval(refreshWeather, CONFIG.weatherRefreshMinutes * 60000);
   setInterval(shiftPixels, 5 * 60000);
   setInterval(nextHeadline, CONFIG.newsSeconds * 1000);
-  window.addEventListener("resize", () => data && renderData());
+  const refit = () => { if (data) safe(renderData); safe(fitQuote); };
+  window.addEventListener("resize", refit);
+  if (document.fonts) document.fonts.ready.then(refit); // each look's fonts can arrive after the first layout
 
   // Give the browser a moment to decide whether sound is allowed.
   setTimeout(() => {

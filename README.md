@@ -40,7 +40,7 @@ Starter files for every tab are in [`sheet-template/`](sheet-template/).
 
 **Changing the music:** move the pointer to the music button under the Quote of the Day and press OK. A list of stations opens; point at one (or Off) and press OK. The pick lasts the rest of the day. Changing the Sheet always wins.
 
-**Changing the look:** use the Theme setting in the Sheet. (Left/right on a keyboard also works, but Silk keeps the remote's arrows for its pointer.)
+**Changing the look:** use the Theme setting in the Sheet, or point at the Look button under the quote and press OK to pick one for the rest of the day. (Left/right on a keyboard also works.)
 
 ## Music
 

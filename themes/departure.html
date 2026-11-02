@@ -1,41 +1,29 @@
 <!doctype html>
-<html lang="en" data-board-theme="daylight">
+<html lang="en" data-board-theme="departure">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agenda Board: Daylight</title>
+  <title>Agenda Board: Departure Board</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Outfit:wght@300;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="daylight.css?v=20261102k">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css?v=20261102l">
+  <link rel="stylesheet" href="departure.css?v=20261102l">
 </head>
 <body>
-  <div class="sky" aria-hidden="true">
-    <div class="stars"></div>
-    <div class="cloud c1"></div>
-    <div class="cloud c2"></div>
-    <div class="cloud c3"></div>
-  </div>
-
   <div id="board">
     <header class="top">
-      <svg class="arc" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path id="arc-full" class="arc-full" />
-        <path id="arc-done" class="arc-done" />
-      </svg>
-      <div id="sun" class="sun"></div>
       <div class="date">
         <div id="weekday" class="weekday"></div>
         <div id="fulldate" class="fulldate"></div>
       </div>
-      <div class="center">
-        <div id="clock" class="clock"></div>
-        <div id="day-note" class="day-note"></div>
-      </div>
+      <div id="clock" class="clock"></div>
       <div id="weather" class="weather">
         <div class="weather-icon" id="w-icon"></div>
-        <div class="weather-temp" id="w-temp">--°</div>
-        <div class="weather-desc" id="w-desc">Loading weather</div>
+        <div>
+          <div class="weather-temp" id="w-temp">--°</div>
+          <div class="weather-desc" id="w-desc">Loading weather</div>
+        </div>
       </div>
     </header>
 
@@ -87,14 +75,14 @@
     <div class="banner-title">Independent Work Time</div>
     <div id="banner-sub" class="banner-sub"></div>
   </div>
+
   <div id="sound-prompt" class="sound-prompt hidden">Press OK on the remote for full screen and the bell sound</div>
   <div id="status" class="status"></div>
 
-  <script src="../config.js?v=20261102k"></script>
-  <script src="../quotes.js?v=20261102k"></script>
-  <script src="../sample-data.js?v=20261102k"></script>
-  <script src="../app.js?v=20261102k"></script>
-  <script src="../music.js?v=20261102k"></script>
-  <script src="daylight.js?v=20261102k"></script>
+  <script src="../config.js?v=20261102l"></script>
+  <script src="../quotes.js?v=20261102l"></script>
+  <script src="../sample-data.js?v=20261102l"></script>
+  <script src="../app.js?v=20261102l"></script>
+  <script src="../music.js?v=20261102l"></script>
 </body>
 </html>

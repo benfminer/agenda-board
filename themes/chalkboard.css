@@ -1,0 +1,38 @@
+/* Chalkboard: green slate in a wood frame, colored chalk headings.
+   Builds on ../style.css and only changes the look. */
+:root {
+  --bg: #1f3a2e;
+  --card: rgba(255, 255, 255, 0.035);
+  --border: rgba(243, 241, 232, 0.28);
+  --text: #f3f1e8;
+  --muted: #c5ccc0;
+  --agenda: #ff9e9e;
+  --notes: #8fd3ff;
+  --events: #ffe78a;
+  --word: #b6f0b0;
+  --quote: #d9b8ff;
+  --indep: #ffe78a;
+}
+
+html, body {
+  background-color: var(--bg);
+  /* faint smudges of old chalk */
+  background-image:
+    radial-gradient(ellipse at 20% 30%, rgba(255, 255, 255, 0.05), transparent 45%),
+    radial-gradient(ellipse at 75% 70%, rgba(255, 255, 255, 0.04), transparent 50%);
+}
+#board { box-shadow: inset 0 0 0 1.2vh #7a5230, inset 0 0 0 1.5vh #5a3a20, inset 0 0 6vh rgba(0, 0, 0, 0.45); padding: 3vh 2.8vw; }
+
+.card { border: 0.25vh dashed var(--border); border-radius: 1vh; }
+h2, .weekday { font-family: "Cabin Sketch", "Atkinson Hyperlegible", sans-serif; letter-spacing: 0.15vh; }
+h2 { font-size: 2.8vh; }
+.agenda h2 { font-size: 3.4vh; }
+.weekday { font-size: 6.2vh; }
+.agenda-list li { border-bottom-style: dashed; }
+.agenda-list .num { background: transparent; color: var(--agenda); box-shadow: inset 0 0 0 0.3vh var(--agenda); }
+.quote-text { font-family: "Patrick Hand", "Atkinson Hyperlegible", sans-serif; font-size: 3.6vh; line-height: 1.2; }
+
+.fc-day { background: rgba(255, 255, 255, 0.04); }
+.fc-day.today { background: rgba(182, 240, 176, 0.12); box-shadow: inset 0 0 0 0.2vh var(--word); }
+.news-label { color: var(--bg); }
+.sound-prompt { background: #2c4d3e; }

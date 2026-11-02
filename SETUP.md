@@ -38,7 +38,7 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 ### Settings (`Setting` | `Value` | `Until`)
 | Setting | Value | Until |
 |---|---|---|
-| Theme | Original, Trailhead, or Daylight (a dropdown works well) | |
+| Theme | Original, Trailhead, Chalkboard, Notebook, Departure Board, or Pastel (a dropdown works well) | |
 | Message | Announcement text, or blank for none | Optional last day to show it |
 | Music | A station name from the Stations tab, or Off (a dropdown from `Stations!A2:A50`) | |
 
@@ -86,15 +86,17 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 | Minimum (every Wed, plus special days) | 7:30-9:30, 8:00-10:00, 10:00-12:00 | 9:00, 9:30, 11:30 |
 | Friday (math review) | Regular periods, all "Class time" | No bell |
 
-On minimum days, Daylight says "Minimum day, out at 12:00" under the clock and its sun shrinks to fit the shorter day.
-
-## The three looks
+## The looks
 - **Original:** dark navy, colorful section headings.
 - **Trailhead:** light, outdoorsy, mountain banner (Rivian-inspired).
-- **Daylight:** the sky changes color with the time of day, and a sun travels across the school day.
+- **Chalkboard:** green chalkboard in a wood frame, colored chalk headings.
+- **Notebook:** ruled paper with a red margin line and sticky-note cards.
+- **Departure Board:** black with big yellow letters, like a train station sign.
+- **Pastel:** light and calm, soft colored cards with rounded corners.
 
 **Switching:**
 - **From the Sheet:** change Theme in the Settings tab. The TV follows within a couple of minutes.
+- **From the TV:** point at the Look button under the quote and press OK, then pick a look. It lasts the rest of the day, or until someone changes Theme in the Sheet.
 - **From a keyboard:** press left or right to flip through the looks. This doesn't work from the Fire TV remote, because Silk uses the arrows for its pointer.
 
 ## Fire TV setup (Toshiba 75C350NU, Silk browser)
@@ -114,7 +116,7 @@ Fully Kiosk Browser was the original plan but isn't available in the Amazon Apps
 
 ## For code changes
 - Settings live in `config.js`: Sheet link, weather location, schedules (`schedules`, `weekdaySchedules`), bell timing (`independentWorkMinutes`), no-bell days (`noIndependentWorkDays`, Friday = 5), quote start date (`listStartDate`), and refresh timing.
-- Files: `index.html` + `style.css` (Original), `themes/trailhead.*`, `themes/daylight.*`, shared logic in `app.js`. Music is `music.js`.
-- **After changing any file, bump the `?v=` number** on the script and stylesheet links in `index.html` and both `themes/` pages (all use the same number). Otherwise the TV may mix old and new files and break.
+- Files: `index.html` + `style.css` (Original), `themes/trailhead.*` (its own full stylesheet), `themes/chalkboard.*`, `notebook.*`, `departure.*`, `pastel.*` (each adds a small stylesheet on top of `style.css`), shared logic in `app.js`. Music is `music.js`.
+- **After changing any file, bump the `?v=` number** on the script and stylesheet links in `index.html` and every `themes/` page (all use the same number). Otherwise the TV may mix old and new files and break.
 - Pushing to `main` on GitHub publishes in about a minute. The TV picks it up at its 3 AM reload, or right away on refresh.
 - The old Word of the Day list is in the git history if you ever want it back.

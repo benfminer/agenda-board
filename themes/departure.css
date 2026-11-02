@@ -1,0 +1,38 @@
+/* Departure Board: black panels and yellow letters, like a train station sign.
+   Builds on ../style.css and only changes the look. */
+:root {
+  --bg: #0a0a0a;
+  --card: #141414;
+  --border: #2b2b2b;
+  --text: #ffffff;
+  --muted: #b3b3b3;
+  --agenda: #ffcc00;
+  --notes: #ffcc00;
+  --events: #ffcc00;
+  --word: #ffcc00;
+  --quote: #ffcc00;
+  --indep: #ffcc00;
+}
+
+.card { border-radius: 0.4vh; border-width: 0.3vh; }
+h2, .weekday, .clock, .news-label {
+  font-family: "Oswald", "Atkinson Hyperlegible", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.3vh;
+}
+h2 { font-size: 2.8vh; font-weight: 700; }
+.agenda h2 { font-size: 3.4vh; }
+.weekday { font-size: 6vh; font-weight: 700; }
+.clock { font-size: 10vh; font-weight: 500; color: var(--agenda); }
+
+/* Each agenda line is its own strip, like a row of the sign */
+.agenda-list li { background: #1d1d1d; border-bottom: 0.4vh solid var(--bg); padding: 0.45em 0.5em; }
+.agenda-list .num { border-radius: 0.3vh; font-family: "Oswald", sans-serif; }
+.notes-list li { border-left-color: #ffffff; }
+
+.fc-day { background: #1d1d1d; border-radius: 0.4vh; }
+.fc-day.today { background: rgba(255, 204, 0, 0.12); box-shadow: inset 0 0 0 0.25vh var(--word); }
+.music-now { border-radius: 0.4vh; }
+.news-label { color: var(--bg); border-radius: 0.3vh; }
+.sound-prompt { background: #1d1d1d; border-color: var(--agenda); }
+.banner { color: #0a0a0a; border-radius: 0.6vh; }

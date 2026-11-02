@@ -159,54 +159,18 @@
   }
 
   // ---------- Station list ----------
-  // Silk keeps the remote's arrows for its pointer, so picking a station has
-  // to be something you can click.
-  const PICKER_SECONDS = 30; // closes on its own if nobody picks
-  let pickerTimer = 0;
-
-  const style = document.createElement("style");
-  style.textContent = `
-    .music-now { cursor: pointer; }
-    #music-picker { position: fixed; inset: 0; z-index: 98; display: flex; align-items: center;
-      justify-content: center; background: rgba(0, 0, 0, 0.55); }
-    #music-picker .panel { background: #1b2233; color: #fff; border-radius: 2vh; padding: 3vh 2.5vw;
-      box-shadow: 0 2vh 8vh rgba(0, 0, 0, 0.6); font-family: inherit; }
-    #music-picker h3 { font-size: 3.4vh; margin: 0 0 2vh; }
-    #music-picker .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vh 1vw; }
-    #music-picker button { font: inherit; font-size: 2.6vh; text-align: left; color: #fff; cursor: pointer;
-      background: rgba(255, 255, 255, 0.08); border: 0.25vh solid transparent; border-radius: 1.2vh;
-      padding: 1.2vh 1.2vw; }
-    #music-picker button.current { border-color: #ffc857; background: rgba(255, 200, 87, 0.18); }`;
-  document.head.appendChild(style);
-
-  function openPicker() {
-    closePicker();
+  // Silk keeps the remote's arrows for its pointer, so picking a station is a
+  // list you click (window.boardPicker, in app.js).
+  function openStationList() {
     const { stations } = window.boardMusic();
     if (!stations.length) return;
     const current = paused ? "" : (playing && playing.name) || "Off";
-    const picker = document.createElement("div");
-    picker.id = "music-picker";
-    picker.innerHTML = `<div class="panel"><h3>\u266A Pick music</h3><div class="grid"></div></div>`;
-    ["Off", ...stations.map((s) => s.name)].forEach((name) => {
-      const b = document.createElement("button");
-      b.textContent = name;
-      if (name === current) b.className = "current";
-      b.addEventListener("click", () => { closePicker(); pickStation(name); });
-      picker.querySelector(".grid").appendChild(b);
-    });
-    picker.addEventListener("click", (e) => { if (e.target === picker) closePicker(); }); // click outside the list
-    document.body.appendChild(picker);
-    pickerTimer = setTimeout(closePicker, PICKER_SECONDS * 1000);
-  }
-
-  function closePicker() {
-    clearTimeout(pickerTimer);
-    const picker = $("music-picker");
-    if (picker) picker.remove();
+    const items = ["Off", ...stations.map((s) => s.name)].map((name) => ({ label: name, value: name }));
+    window.boardPicker("\u266A Pick music", items, current, pickStation);
   }
 
   const musicLine = $("music-now");
-  if (musicLine) musicLine.addEventListener("click", openPicker);
+  if (musicLine) musicLine.addEventListener("click", openStationList);
 
   // Pausing only stops the music. The bell plays separately and still rings.
   function setPaused(value) {
