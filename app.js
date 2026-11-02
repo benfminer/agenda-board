@@ -241,7 +241,8 @@
   // Sheet fill in the headlines. Sources take turns so one doesn't hog the bar.
   function newsFrom(rows) {
     const bySource = {};
-    rows.filter((r) => r.headline && !/^#/.test(r.headline)).forEach((r) => {
+    // Skips errors like #N/A, and formulas that got typed in as plain text.
+    rows.filter((r) => r.headline && !/^[#=]/.test(r.headline)).forEach((r) => {
       const source = r.source || "";
       (bySource[source] = bySource[source] || []).push({ headline: decodeEntities(r.headline), source });
     });
