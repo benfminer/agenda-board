@@ -65,7 +65,7 @@ html, body {
   width: 100vw; height: 100vh;
   padding: 1.8vh 2vw;
   display: grid;
-  grid-template-rows: 20vh 1fr 23.5vh 9vh;
+  grid-template-rows: 20vh 1fr 23.5vh auto;
   gap: var(--gap);
   transition: transform 2s ease;
 }
@@ -169,15 +169,12 @@ h2 {
 .fc-icon { font-size: 4vh; line-height: 1; }
 .fc-temps { font-size: 2.6vh; }
 .fc-hi { font-weight: 700; }
-.fc-range { position: relative; width: 70%; height: 0.7vh; border-radius: 1vh; }
-.fc-range span { position: absolute; top: 0; bottom: 0; border-radius: 1vh; background: linear-gradient(90deg, #5aa9ff, #ffc857, #ff8a5b); }
 .fc-rain { font-size: 1.9vh; }
 .forecast h2 { color: var(--mint); }
 .fc-day { background: rgba(255, 255, 255, 0.06); }
 .fc-day.today { background: rgba(126, 240, 197, 0.16); box-shadow: inset 0 0 0 0.2vh var(--mint); }
 .fc-name { font-family: "Outfit", sans-serif; }
 .fc-lo, .fc-rain { color: var(--muted); }
-.fc-range { background: rgba(255, 255, 255, 0.15); }
 .fc-rain.wet { color: #8fd3ff; font-weight: 700; }
 
 .bottom { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--gap); min-height: 0; }
@@ -186,34 +183,23 @@ h2 {
 .quote-author { font-size: 2.2vh; color: var(--lilac); margin-top: 0.8vh; }
 .music-now { margin-top: auto; padding-top: 1vh; font-size: 2.1vh; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Timeline of the school day */
-.timeline-card { padding: 1.2vh 1.6vw; }
-.timeline { position: relative; flex: 1; }
-.lane { position: absolute; left: 0; right: 0; height: 38%; }
-.lane:nth-child(1) { top: 0; }
-.lane:nth-child(2) { top: 44%; }
-.bar {
-  position: absolute; top: 0; bottom: 0;
-  border-radius: 1vh;
-  background: rgba(255, 255, 255, 0.14);
-  overflow: hidden;
-  display: flex; align-items: center; padding-left: 0.8vw;
-  font-family: "Outfit", sans-serif; font-weight: 600; font-size: 2vh;
-  white-space: nowrap;
+/* News bar: one headline at a time from the News tab */
+.news {
+  height: 9vh;
+  flex-direction: row; align-items: center; gap: 1.6vw;
+  padding: 0 1.6vw;
 }
-.bar .indep {
-  position: absolute; right: 0; top: 0; bottom: 0;
-  background: repeating-linear-gradient(-45deg, rgba(255, 169, 77, 0.55) 0 0.6vh, rgba(255, 169, 77, 0.3) 0.6vh 1.2vh);
+.news-label {
+  flex-shrink: 0;
+  font-family: "Outfit", sans-serif; font-size: 2.1vh; font-weight: 800;
+  letter-spacing: 0.3vh; text-transform: uppercase;
+  color: #2a1600; background: var(--sun);
+  padding: 0.6vh 1vw; border-radius: 10vh;
 }
-.bar .label { position: relative; }
-.bar.past { opacity: 0.35; }
-.bar.active { background: rgba(126, 240, 197, 0.35); box-shadow: inset 0 0 0 0.25vh var(--mint); }
-.bar.active.in-indep { box-shadow: inset 0 0 0 0.25vh #ffa94d; }
-.now-line {
-  position: absolute; top: -0.6vh; bottom: -0.6vh; width: 0.4vh; margin-left: -0.2vh;
-  background: var(--sun); border-radius: 1vh;
-  box-shadow: 0 0 1.5vh var(--sun);
-}
+.news-text { min-width: 0; flex: 1; display: flex; align-items: baseline; gap: 1.2vw; transition: opacity 0.6s; }
+.news-text.fade { opacity: 0; }
+.news-headline { font-size: 3.3vh; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.news-source { flex-shrink: 0; font-size: 2.1vh; color: var(--muted); }
 
 /* Bell banner */
 .banner {
@@ -239,7 +225,7 @@ h2 {
 .hidden { display: none; }
 
 /* Announcement strip (Message row in the Settings tab) */
-#board.has-msg { grid-template-rows: 20vh auto 1fr 23.5vh 9vh; }
+#board.has-msg { grid-template-rows: 20vh auto 1fr 23.5vh auto; }
 .announcement {
   color: #2a1600;
   background: radial-gradient(circle at 30% 20%, #fff3c4, var(--sun) 45%, var(--sun-hot));
@@ -249,9 +235,6 @@ h2 {
   animation: glow 0.6s ease-out;
 }
 .announcement::before { content: "\1F4E3  "; }
-
-/* No school: a single message instead of the timeline */
-.timeline .no-school { height: 100%; display: flex; align-items: center; justify-content: center; font-family: "Outfit", sans-serif; font-size: 3vh; font-weight: 600; color: var(--muted); }
 
 /* Keep line breaks typed inside a Sheet cell (Option+Enter) */
 .agenda-list li > span:last-child, .notes-list li { white-space: pre-line; }

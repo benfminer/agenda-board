@@ -25,7 +25,7 @@ html, body {
   width: 100vw; height: 100vh;
   padding: 2vh 2vw;
   display: grid;
-  grid-template-rows: 25vh 1fr 22vh;
+  grid-template-rows: 21vh 1fr 22vh auto;
   gap: var(--gap);
   transition: transform 2s ease;
 }
@@ -57,7 +57,6 @@ h2 {
   overflow: hidden;
   color: #fff;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
 }
 .ridges { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero-content {
@@ -83,26 +82,6 @@ h2 {
 }
 .weather-icon { font-size: 3vh; }
 .weather-temp { font-weight: 800; font-size: 2.8vh; }
-
-/* Period pills sit on the dark ridge line */
-.schedule {
-  position: relative;
-  display: flex; gap: 1vw;
-  padding: 1.2vh 2.4vw 1.8vh;
-}
-.period {
-  flex: 1;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1vh 1.4vw;
-  border-radius: 10vh;
-  border: 0.2vh solid rgba(255, 255, 255, 0.35);
-  color: #fff;
-}
-.period .range { font-size: 2.4vh; font-weight: 800; font-variant-numeric: tabular-nums; }
-.period .state { font-size: 1.8vh; font-weight: 600; opacity: 0.85; }
-.period.done { opacity: 0.4; }
-.period.class { background: #fff; color: var(--ink); border-color: #fff; }
-.period.indep { background: var(--amber); color: var(--ink); border-color: var(--amber); }
 
 /* Middle */
 .middle { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--gap); min-height: 0; }
@@ -160,15 +139,12 @@ h2 {
 .fc-icon { font-size: 4vh; line-height: 1; }
 .fc-temps { font-size: 2.6vh; }
 .fc-hi { font-weight: 700; }
-.fc-range { position: relative; width: 70%; height: 0.7vh; border-radius: 1vh; }
-.fc-range span { position: absolute; top: 0; bottom: 0; border-radius: 1vh; background: linear-gradient(90deg, #5aa9ff, #ffc857, #ff8a5b); }
 .fc-rain { font-size: 1.9vh; }
 .forecast { border-left: 1vh solid var(--amber); }
 .fc-day.today { background: #FFF4DC; }
 .fc-name { text-transform: uppercase; letter-spacing: 0.15vh; color: var(--slate); font-weight: 800; font-size: 2vh; }
 .fc-temps { font-weight: 600; }
 .fc-lo, .fc-rain { color: var(--ink-soft); }
-.fc-range { background: var(--line); }
 .fc-rain.wet { color: var(--slate); font-weight: 800; }
 
 .bottom { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--gap); min-height: 0; }
@@ -205,7 +181,7 @@ h2 {
 .hidden { display: none; }
 
 /* Announcement strip (Message row in the Settings tab) */
-#board.has-msg { grid-template-rows: 25vh auto 1fr 22vh; }
+#board.has-msg { grid-template-rows: 21vh auto 1fr 22vh auto; }
 .announcement {
   background: var(--amber); color: var(--ink);
   border-radius: var(--radius); padding: 1.4vh 2vw;
@@ -214,9 +190,23 @@ h2 {
 }
 .announcement::before { content: "\1F4E3  "; }
 
-/* Minimum day and no-school pills */
-.period.min-day { background: rgba(255, 172, 0, 0.25); border-color: var(--amber); }
-.period.no-school { justify-content: center; }
+/* News bar: one headline at a time from the News tab */
+.news {
+  height: 8vh;
+  flex-direction: row; align-items: center; gap: 1.6vw;
+  padding: 0 1.8vw;
+  background: var(--forest); color: #F6F6F6;
+}
+.news-label {
+  flex-shrink: 0;
+  font-size: 1.9vh; font-weight: 800; letter-spacing: 0.4vh; text-transform: uppercase;
+  color: var(--ink); background: var(--amber);
+  padding: 0.6vh 1vw; border-radius: 10vh;
+}
+.news-text { min-width: 0; flex: 1; display: flex; align-items: baseline; gap: 1.2vw; transition: opacity 0.6s; }
+.news-text.fade { opacity: 0; }
+.news-headline { font-size: 3vh; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.news-source { flex-shrink: 0; font-size: 2vh; font-weight: 600; color: var(--dusk); }
 
 /* Keep line breaks typed inside a Sheet cell (Option+Enter) */
 .agenda-list li > span:last-child, .notes-list li { white-space: pre-line; }

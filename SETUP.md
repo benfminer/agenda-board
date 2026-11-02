@@ -11,16 +11,16 @@ The classroom agenda board runs on the Fire TV and reads everything from a Googl
 - **Today's Agenda:** from the Agenda tab.
 - **Notes:** from the Notes tab.
 - **Coming Up:** events from the Events tab within the next 30 days, with a countdown.
-- **5-Day Forecast:** automatic, from the free Open-Meteo weather service.
+- **5-Day Forecast:** automatic, from the free Open-Meteo weather service. The chance of rain shows only when it's 30% or more.
 - **Quote of the Day:** automatic, from a built-in list of 180 quotes (`quotes.js`). A new one each school day.
 - **Music:** radio from the station picked in the Settings tab. The station (and song, when known) shows under the quote.
-- **Period strip:** the day's periods with "Class time," "Independent work," or "Done."
+- **In the News:** kid-friendly headlines from the News tab along the bottom, one at a time, changing every 15 seconds. Hidden if the tab is missing or empty.
 - **Bell:** a soft chime plus a big "Independent Work Time" banner 30 minutes before each period ends.
 
 ## The Google Sheet
 The Sheet must be shared as **Anyone with the link: Viewer**. Anyone with the link can see it, so use first names, initials, or staff names only.
 
-Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Events**, **Settings**, **Special Days**, **Stations**. Starter files are in `sheet-template/`.
+Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Events**, **Settings**, **Special Days**, **Stations**, **News**. Starter files are in `sheet-template/`.
 
 ### Agenda (`Date` | `Item`)
 - One row per item. Items show in row order.
@@ -52,6 +52,12 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 - SomaFM stations and KUSC also show the song playing. The others show just the station name.
 - Station links aren't official and can stop working. If one does, the board shows "(connecting)" and keeps retrying; pick another station.
 
+### News (`Headline` | `Source`)
+- Headlines for the "In the News" bar. Google fills them in with IMPORTFEED formulas, so there's nothing to type day to day. Starter file: `sheet-template/news.csv`.
+- Setup: put `Headline` in A1 and `Source` in B1. In A2 paste `=IMPORTFEED("https://www.newsforkids.net/feed/","items title",FALSE,5)` and type `News for Kids` in B2 through B6. In A7 paste `=IMPORTFEED("https://www.snexplores.org/feed","items title",FALSE,5)` and type `Science News Explores` in B7 through B11.
+- Both sources write for kids and teens and skip graphic stories. The board takes turns between sources.
+- You can also type your own headline in any empty row. Delete everything (or the tab) to hide the bar.
+
 ### Special Days (`Date` | `Schedule`)
 - **Every Wednesday is automatically a minimum day.** Nothing to enter.
 - Add a row only for exceptions. Schedule is a dropdown with:
@@ -65,7 +71,8 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 ### How fast changes show up
 | What | How often |
 |---|---|
-| Sheet (agenda, notes, events, theme, message, music, special days) | Every minute, plus a minute or two for Google to publish the edit |
+| Sheet (agenda, notes, events, theme, message, music, special days, news) | Every minute, plus a minute or two for Google to publish the edit |
+| News headlines from the feeds | About every hour (Google refreshes IMPORTFEED on its own) |
 | Weather and forecast | Every 30 minutes |
 | Quote | Once per school day |
 | Song name (SomaFM and KUSC) | Every 30 seconds |
@@ -78,12 +85,12 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 | Minimum (every Wed, plus special days) | 7:30-9:30, 8:00-10:00, 10:00-12:00 | 9:00, 9:30, 11:30 |
 | Friday (math review) | Regular periods, all "Class time" | No bell |
 
-On minimum days, the strip shows a "Minimum Day, out at 12:00" tag, and Daylight's timeline and sun shrink to fit the shorter day.
+On minimum days, Daylight says "Minimum day, out at 12:00" under the clock and its sun shrinks to fit the shorter day.
 
 ## The three looks
 - **Original:** dark navy, colorful section headings.
-- **Trailhead:** light, outdoorsy, mountain banner with period pills (Rivian-inspired).
-- **Daylight:** the sky changes color with the time of day, a sun travels across the school day, and a timeline replaces the period strip.
+- **Trailhead:** light, outdoorsy, mountain banner (Rivian-inspired).
+- **Daylight:** the sky changes color with the time of day, and a sun travels across the school day.
 
 **Switching:**
 - **From the Sheet:** change Theme in the Settings tab. The TV follows within a couple of minutes.

@@ -28,5 +28,10 @@ function sampleData(today) {
       { date: d(45), event: "45 days out (should not show)" },
       { date: d(-2), event: "Past event (should not show)" },
     ],
+    news: [
+      { headline: "The US Gets a New National Park", source: "News for Kids" },
+      { headline: "Toys inspired this moon rover\u2019s unique design", source: "Science News Explores" },
+      { headline: "Three African Wild Dogs Travel Over 2,500 Miles", source: "News for Kids" },
+    ],
   };
 }

@@ -1,4 +1,4 @@
-// Daylight view: moving sky, sun arc, and a timeline of the school day.
+// Daylight view: moving sky and a sun that travels across the school day.
 (function () {
   "use strict";
   const now = window.boardNow || (() => new Date());
@@ -39,23 +39,16 @@
 
   const mins = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
   const fmt = (m) => `${(Math.floor(m / 60) % 12) || 12}:${String(m % 60).padStart(2, "0")}`;
-  const indepToday = (d) => !(CONFIG.noIndependentWorkDays || []).includes(d.getDay());
 
-  // Today's periods (Regular, Minimum, or none), split into two lanes so
-  // overlapping groups sit side by side.
+  // Today's periods (Regular, Minimum, or none): when school starts and ends.
   function dayPlan(d) {
     const periods = (window.boardPeriods ? window.boardPeriods(d) : CONFIG.schedules.Regular)
       .map((p) => ({ s: mins(p.start), e: mins(p.end) }));
     if (!periods.length) return null;
-    const lanes = [];
-    [...periods].sort((a, b) => a.s - b.s).forEach((p) => {
-      const lane = lanes.find((l) => l[l.length - 1].e <= p.s);
-      lane ? lane.push(p) : lanes.push([p]);
-    });
     const start = Math.min(...periods.map((p) => p.s));
     const end = Math.max(...periods.map((p) => p.e));
     const type = window.boardDayType ? window.boardDayType(d) : "Regular";
-    return { lanes, start, end, type, pct: (m) => ((m - start) / (end - start)) * 100 };
+    return { start, end, type };
   }
 
   // Sun arc across the top, matching the school day.
@@ -92,33 +85,12 @@
     return tag ? `${tag} · ${time}` : `${time} in the school day`;
   }
 
-  function paintTimeline(d, plan, m) {
-    if (!plan) {
-      $("timeline").innerHTML = `<div class="no-school">${dayNote(d, null, m)}</div>`;
-      return;
-    }
-    const indep = indepToday(d);
-    let html = plan.lanes.map((lane) => `<div class="lane">${lane.map((p) => {
-      const indepAt = indep ? p.e - CONFIG.independentWorkMinutes : p.e;
-      let cls = "bar";
-      if (m >= p.e) cls += " past";
-      else if (m >= p.s) cls += " active" + (m >= indepAt ? " in-indep" : "");
-      const indepWidth = indep ? (CONFIG.independentWorkMinutes / (p.e - p.s)) * 100 : 0;
-      return `<div class="${cls}" style="left:${plan.pct(p.s)}%;width:${plan.pct(p.e) - plan.pct(p.s)}%">`
-        + (indepWidth ? `<div class="indep" style="width:${indepWidth}%"></div>` : "")
-        + `<span class="label">${fmt(p.s)} - ${fmt(p.e)}</span></div>`;
-    }).join("")}</div>`).join("");
-    if (m >= plan.start && m <= plan.end) html += `<div class="now-line" style="left:${plan.pct(m)}%"></div>`;
-    $("timeline").innerHTML = html;
-  }
-
   function update() {
     const d = now();
     const m = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
     const plan = dayPlan(d);
     paintSky(d);
     paintSun(plan, m);
-    paintTimeline(d, plan, m);
     $("day-note").textContent = dayNote(d, plan, m);
   }
 

@@ -1,0 +1,11 @@
+Headline,Source
+"=IMPORTFEED(""https://www.newsforkids.net/feed/"",""items title"",FALSE,5)",News for Kids
+,News for Kids
+,News for Kids
+,News for Kids
+,News for Kids
+"=IMPORTFEED(""https://www.snexplores.org/feed"",""items title"",FALSE,5)",Science News Explores
+,Science News Explores
+,Science News Explores
+,Science News Explores
+,Science News Explores

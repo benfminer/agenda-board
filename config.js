@@ -5,7 +5,7 @@ const CONFIG = {
   sheetUrl: "https://docs.google.com/spreadsheets/d/1YUe5vWZbMZC_54jU0HRcJsj-ajtwBHXJNg2eTfFXskw/edit?usp=sharing",
 
   // Tab names in the Google Sheet. They must match exactly.
-  tabs: { agenda: "Agenda", notes: "Notes", events: "Events", settings: "Settings", special: "Special Days", stations: "Stations" },
+  tabs: { agenda: "Agenda", notes: "Notes", events: "Events", settings: "Settings", special: "Special Days", stations: "Stations", news: "News" },
 
   // Weather location (92105, City Heights, San Diego).
   weather: { latitude: 32.74, longitude: -117.09, timezone: "America/Los_Angeles" },
@@ -48,6 +48,9 @@ const CONFIG = {
   // Music volume, from 0 (silent) to 1 (full). The TV's own volume still
   // applies on top of this.
   musicVolume: 0.6,
+
+  // How long each news headline stays up, in seconds.
+  newsSeconds: 15,
 
   // How often to check for new data, in minutes.
   sheetRefreshMinutes: 1,

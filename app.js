@@ -237,6 +237,27 @@
       .filter((r) => r.station && /^https:\/\//.test(r.stream || ""))
       .map((r) => ({ name: r.station.trim(), stream: r.stream.trim() }));
   }
+  // News tab rows look like "Headline | Source". IMPORTFEED formulas in the
+  // Sheet fill in the headlines. Sources take turns so one doesn't hog the bar.
+  function newsFrom(rows) {
+    const bySource = {};
+    rows.filter((r) => r.headline && !/^#/.test(r.headline)).forEach((r) => {
+      const source = r.source || "";
+      (bySource[source] = bySource[source] || []).push({ headline: decodeEntities(r.headline), source });
+    });
+    const lists = Object.values(bySource);
+    const out = [];
+    for (let i = 0; lists.some((l) => i < l.length); i++) lists.forEach((l) => { if (l[i]) out.push(l[i]); });
+    return out;
+  }
+
+  // Feeds sometimes send "&#8217;" instead of an apostrophe.
+  function decodeEntities(text) {
+    const t = document.createElement("textarea");
+    t.innerHTML = text;
+    return t.value;
+  }
+
   window.boardMusic = () => ({
     choice: (data && data.music) || "",
     stations: (data && data.stations) || [],
@@ -276,19 +297,21 @@
     try {
       // Optional tabs: if one is missing, Google sends the first tab instead,
       // whose rows have no "setting"/"schedule" column and are ignored.
-      const [agenda, notes, events, settings, special, stations] = await Promise.all([
+      const [agenda, notes, events, settings, special, stations, news] = await Promise.all([
         fetchTab(id, CONFIG.tabs.agenda),
         fetchTab(id, CONFIG.tabs.notes),
         fetchTab(id, CONFIG.tabs.events),
         fetchTab(id, CONFIG.tabs.settings).catch(() => []),
         fetchTab(id, CONFIG.tabs.special).catch(() => []),
         fetchTab(id, CONFIG.tabs.stations).catch(() => []),
+        fetchTab(id, CONFIG.tabs.news).catch(() => []),
       ]);
       data = {
         agenda, notes, events, special,
         message: messageFromSettings(settings),
         music: musicFromSettings(settings),
         stations: stationsFrom(stations),
+        news: newsFrom(news),
       };
       dataSource = "sheet";
       lastUpdate = new Date();
@@ -312,7 +335,33 @@
     safe(() => renderAgenda(today));
     safe(() => renderNotes(today));
     safe(() => renderEvents(today));
+    safe(renderNews);
     safe(renderStatus);
+  }
+
+  // News bar along the bottom: one headline at a time.
+  let newsIndex = 0;
+  function renderNews() {
+    const el = $("news");
+    if (!el) return;
+    const items = (data && data.news) || [];
+    el.classList.toggle("hidden", !items.length);
+    if (!items.length) return;
+    const item = items[newsIndex % items.length];
+    $("news-headline").textContent = item.headline;
+    $("news-source").textContent = item.source;
+  }
+
+  function nextHeadline() {
+    const items = (data && data.news) || [];
+    if (items.length < 2) return;
+    const text = $("news-text");
+    text.classList.add("fade");
+    setTimeout(() => {
+      newsIndex = (newsIndex + 1) % items.length;
+      safe(renderNews);
+      text.classList.remove("fade");
+    }, 600);
   }
 
   // Big strip across the top, from the Message row in the Settings tab.
@@ -426,27 +475,22 @@
   }
 
   // Five columns: day, picture, high/low, and chance of rain.
-  // The bar shows each day's temperature range on a shared scale.
+  // Rain only shows at 30% or more, same as the line at the top.
   function renderForecast(daily) {
     const el = $("forecast");
     if (!el) return;
     const highs = daily.temperature_2m_max.map(Math.round);
     const lows = daily.temperature_2m_min.map(Math.round);
-    const min = Math.min(...lows), max = Math.max(...highs);
-    const span = Math.max(max - min, 1);
     el.innerHTML = daily.time.map((dateStr, i) => {
       const [y, m, d] = dateStr.split("-").map(Number);
       const day = i === 0 ? "Today" : new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short" });
       const [icon, desc] = weatherLook(daily.weather_code[i], 1);
       const rain = daily.precipitation_probability_max[i] || 0;
-      const left = ((lows[i] - min) / span) * 100;
-      const width = Math.max(((highs[i] - lows[i]) / span) * 100, 8);
       return `<div class="fc-day${i === 0 ? " today" : ""}">`
         + `<div class="fc-name">${day}</div>`
         + `<div class="fc-icon" title="${desc}">${icon}</div>`
         + `<div class="fc-temps"><span class="fc-hi">${highs[i]}°</span> <span class="fc-lo">${lows[i]}°</span></div>`
-        + `<div class="fc-range"><span style="left:${left}%;width:${width}%"></span></div>`
-        + `<div class="fc-rain${rain >= 40 ? " wet" : ""}">💧 ${rain}%</div>`
+        + `<div class="fc-rain${rain >= 40 ? " wet" : ""}">${rain >= 30 ? `💧 ${rain}%` : "&nbsp;"}</div>`
         + `</div>`;
     }).join("");
   }
@@ -475,31 +519,8 @@
     }
   }
 
-  // ---------- Schedule strip ----------
   function hasIndependentWork(d) {
     return !(CONFIG.noIndependentWorkDays || []).includes(d.getDay());
-  }
-
-  function renderSchedule(d) {
-    const mins = d.getHours() * 60 + d.getMinutes() + d.getSeconds() / 60;
-    const indepToday = hasIndependentWork(d);
-    const periods = periodsFor(d);
-    if (!periods.length) {
-      const msg = isWeekend(d) ? "Enjoy your weekend" : "No school today";
-      $("schedule").innerHTML = `<div class="period no-school"><div class="range">${msg}</div></div>`;
-      return;
-    }
-    const minimum = dayType(d) === "Minimum";
-    $("schedule").innerHTML = periods.map((p) => {
-      const s = minutesOf(p.start), e = minutesOf(p.end);
-      const indepAt = indepToday ? e - CONFIG.independentWorkMinutes : e;
-      let cls = "", state = "";
-      if (mins < s) state = "Later";
-      else if (mins < indepAt) { cls = "class"; state = "Class time"; }
-      else if (mins < e) { cls = "indep"; state = "Independent work"; }
-      else { cls = "done"; state = "Done"; }
-      return `<div class="period ${cls}"><div class="range">${format12(s)} - ${format12(e)}</div><div class="state">${state}</div></div>`;
-    }).join("") + (minimum ? `<div class="period min-day"><div class="range">Minimum Day</div><div class="state">Out at ${format12(Math.max(...periods.map((p) => minutesOf(p.end))))}</div></div>` : "");
   }
 
   // ---------- Bell ----------
@@ -609,7 +630,6 @@
   function tick() {
     const d = now();
     safe(() => renderClock(d));
-    safe(() => renderSchedule(d));
     safe(() => checkBells(d));
     safe(() => checkNightlyReload(d));
     const dayKey = d.toDateString();
@@ -631,6 +651,7 @@
   setInterval(refreshSheet, CONFIG.sheetRefreshMinutes * 60000);
   setInterval(refreshWeather, CONFIG.weatherRefreshMinutes * 60000);
   setInterval(shiftPixels, 5 * 60000);
+  setInterval(nextHeadline, CONFIG.newsSeconds * 1000);
   window.addEventListener("resize", () => data && renderData());
 
   // Give the browser a moment to decide whether sound is allowed.

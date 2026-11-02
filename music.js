@@ -72,7 +72,7 @@
   function renderNowPlaying() {
     const el = $("music-now");
     if (!el) return;
-    if (paused && unlocked) {
+    if (paused && unlocked && wantedStation()) {
       el.textContent = "\u266A Music paused";
       el.classList.remove("hidden");
       return;
@@ -163,7 +163,7 @@
   function setPaused(value) {
     if (paused === value) return;
     paused = value;
-    if (window.boardToast) window.boardToast(paused ? "Music paused" : "Music on");
+    if (window.boardToast) window.boardToast(!wantedStation() ? "Music off" : paused ? "Music paused" : "Music on");
     update();
   }
 

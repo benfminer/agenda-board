@@ -31,7 +31,7 @@ html, body {
   height: 100vh;
   padding: 2.2vh 2.2vw;
   display: grid;
-  grid-template-rows: auto 1fr 24vh 9vh;
+  grid-template-rows: auto 1fr 24vh auto;
   gap: var(--gap);
   transition: transform 2s ease;
 }
@@ -156,14 +156,11 @@ h2 {
 .fc-icon { font-size: 4vh; line-height: 1; }
 .fc-temps { font-size: 2.6vh; }
 .fc-hi { font-weight: 700; }
-.fc-range { position: relative; width: 70%; height: 0.7vh; border-radius: 1vh; }
-.fc-range span { position: absolute; top: 0; bottom: 0; border-radius: 1vh; background: linear-gradient(90deg, #5aa9ff, #ffc857, #ff8a5b); }
 .fc-rain { font-size: 1.9vh; }
 .forecast h2 { color: var(--word); }
 .fc-day { background: rgba(255, 255, 255, 0.04); }
 .fc-day.today { background: rgba(79, 209, 165, 0.14); box-shadow: inset 0 0 0 0.2vh var(--word); }
 .fc-lo, .fc-rain { color: var(--muted); }
-.fc-range { background: var(--border); }
 .fc-rain.wet { color: var(--notes); font-weight: 700; }
 
 .bottom {
@@ -178,29 +175,22 @@ h2 {
 .quote-author { font-size: 2.5vh; color: var(--quote); margin-top: 0.8vh; }
 .music-now { margin-top: auto; padding-top: 1vh; font-size: 2.2vh; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Schedule strip */
-.schedule {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--gap);
+/* News bar: one headline at a time from the News tab */
+.news {
+  height: 9vh;
+  flex-direction: row; align-items: center; gap: 1.6vw;
+  padding: 0 1.6vw;
 }
-.period {
-  background: var(--card);
-  border: 0.2vh solid var(--border);
-  border-radius: 1.4vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  line-height: 1.15;
+.news-label {
+  flex-shrink: 0;
+  font-size: 2.2vh; font-weight: 700; text-transform: uppercase; letter-spacing: 0.25vh;
+  color: var(--bg); background: var(--notes);
+  padding: 0.6vh 1vw; border-radius: 1vh;
 }
-.period .range { font-size: 3.2vh; font-weight: 700; font-variant-numeric: tabular-nums; }
-.period .state { font-size: 2.3vh; color: var(--muted); }
-.period.done { opacity: 0.4; }
-.period.class { border-color: var(--word); background: #163a33; }
-.period.class .state { color: var(--word); font-weight: 700; }
-.period.indep { border-color: var(--indep); background: #43301a; }
-.period.indep .state { color: var(--indep); font-weight: 700; }
+.news-text { min-width: 0; flex: 1; display: flex; align-items: baseline; gap: 1.2vw; transition: opacity 0.6s; }
+.news-text.fade { opacity: 0; }
+.news-headline { font-size: 3.4vh; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.news-source { flex-shrink: 0; font-size: 2.2vh; color: var(--muted); }
 
 /* Bell banner */
 .banner {
@@ -245,7 +235,7 @@ h2 {
 .hidden { display: none; }
 
 /* Announcement strip (Message row in the Settings tab) */
-#board.has-msg { grid-template-rows: auto auto 1fr 24vh 9vh; }
+#board.has-msg { grid-template-rows: auto auto 1fr 24vh auto; }
 .announcement {
   background: var(--events); color: var(--bg);
   border-radius: 1.6vh; padding: 1.4vh 2vw;
@@ -253,12 +243,6 @@ h2 {
   animation: pop 0.4s ease-out;
 }
 .announcement::before { content: "\1F4E3  "; }
-
-/* Minimum day and no-school cells in the schedule strip */
-.period.min-day { border-color: var(--events); }
-.period.min-day .range { color: var(--events); }
-.period.no-school { grid-column: 1 / -1; }
-.period.no-school .range { color: var(--muted); }
 
 /* Keep line breaks typed inside a Sheet cell (Option+Enter) */
 .agenda-list li > span:last-child, .notes-list li { white-space: pre-line; }
