@@ -1,7 +1,8 @@
 // Radio for the board. The Music row in the Settings tab picks a station
-// from the Stations tab (or "Off"). The remote's up/down arrows switch
-// stations for the rest of the day, and play/pause stops the music (the bell
-// still rings).
+// from the Stations tab (or "Off"). Clicking the music line under the quote
+// (move Silk's pointer there with the arrows, then OK) opens a list to pick
+// another station for the rest of the day. Play/pause on the remote stops the
+// music (the bell still rings).
 (function () {
   "use strict";
 
@@ -69,19 +70,22 @@
     audio.load();
   }
 
+  // The music line doubles as the button that opens the station list.
   function renderNowPlaying() {
     const el = $("music-now");
     if (!el) return;
-    if (paused && unlocked && wantedStation()) {
+    el.classList.toggle("hidden", !window.boardMusic().stations.length);
+    if (paused && wantedStation()) {
       el.textContent = "\u266A Music paused";
-      el.classList.remove("hidden");
       return;
     }
-    const show = playing && unlocked;
-    const flowing = show && !audio.paused && Date.now() - lastProgress < 3000;
+    if (!playing) {
+      el.textContent = "\u266A Music off";
+      return;
+    }
+    const flowing = unlocked && !audio.paused && Date.now() - lastProgress < 3000;
     const name = song ? `${song} · ${playing.name}` : playing.name; // song first, it gets cut off last
-    el.textContent = !show ? "" : flowing ? `♪ ${name}` : `♪ ${playing.name} (connecting)`;
-    el.classList.toggle("hidden", !show);
+    el.textContent = flowing ? `♪ ${name}` : `♪ ${playing.name} (connecting)`;
   }
 
   // ---------- Song info ----------
@@ -144,20 +148,65 @@
     renderNowPlaying();
   }
 
-  // Up/down on the remote: next or previous station, then "Off".
-  function cycleStation(step) {
-    const { stations } = window.boardMusic();
+  // A station picked from the list lasts the rest of the day, or until the
+  // Sheet's Music setting changes.
+  function pickStation(name) {
     const choice = previewChoice || window.boardMusic().choice;
-    if (!stations.length) return;
-    const names = stations.map((s) => s.name).concat("Off");
-    const current = (playing && playing.name) || "Off";
-    const i = names.indexOf(current);
-    const next = names[(i + step + names.length) % names.length];
-    writeStore("musicOverride", { name: next, basedOn: choice, day: window.boardNow().toDateString() });
+    writeStore("musicOverride", { name, basedOn: choice, day: window.boardNow().toDateString() });
     paused = false;
-    if (window.boardToast) window.boardToast(next === "Off" ? "Music off" : next);
+    if (window.boardToast) window.boardToast(name === "Off" ? "Music off" : name);
     update();
   }
+
+  // ---------- Station list ----------
+  // Silk keeps the remote's arrows for its pointer, so picking a station has
+  // to be something you can click.
+  const PICKER_SECONDS = 30; // closes on its own if nobody picks
+  let pickerTimer = 0;
+
+  const style = document.createElement("style");
+  style.textContent = `
+    .music-now { cursor: pointer; }
+    #music-picker { position: fixed; inset: 0; z-index: 98; display: flex; align-items: center;
+      justify-content: center; background: rgba(0, 0, 0, 0.55); }
+    #music-picker .panel { background: #1b2233; color: #fff; border-radius: 2vh; padding: 3vh 2.5vw;
+      box-shadow: 0 2vh 8vh rgba(0, 0, 0, 0.6); font-family: inherit; }
+    #music-picker h3 { font-size: 3.4vh; margin: 0 0 2vh; }
+    #music-picker .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vh 1vw; }
+    #music-picker button { font: inherit; font-size: 2.6vh; text-align: left; color: #fff; cursor: pointer;
+      background: rgba(255, 255, 255, 0.08); border: 0.25vh solid transparent; border-radius: 1.2vh;
+      padding: 1.2vh 1.2vw; }
+    #music-picker button.current { border-color: #ffc857; background: rgba(255, 200, 87, 0.18); }`;
+  document.head.appendChild(style);
+
+  function openPicker() {
+    closePicker();
+    const { stations } = window.boardMusic();
+    if (!stations.length) return;
+    const current = paused ? "" : (playing && playing.name) || "Off";
+    const picker = document.createElement("div");
+    picker.id = "music-picker";
+    picker.innerHTML = `<div class="panel"><h3>\u266A Pick music</h3><div class="grid"></div></div>`;
+    ["Off", ...stations.map((s) => s.name)].forEach((name) => {
+      const b = document.createElement("button");
+      b.textContent = name;
+      if (name === current) b.className = "current";
+      b.addEventListener("click", () => { closePicker(); pickStation(name); });
+      picker.querySelector(".grid").appendChild(b);
+    });
+    picker.addEventListener("click", (e) => { if (e.target === picker) closePicker(); }); // click outside the list
+    document.body.appendChild(picker);
+    pickerTimer = setTimeout(closePicker, PICKER_SECONDS * 1000);
+  }
+
+  function closePicker() {
+    clearTimeout(pickerTimer);
+    const picker = $("music-picker");
+    if (picker) picker.remove();
+  }
+
+  const musicLine = $("music-now");
+  if (musicLine) musicLine.addEventListener("click", openPicker);
 
   // Pausing only stops the music. The bell plays separately and still rings.
   function setPaused(value) {
@@ -167,11 +216,8 @@
     update();
   }
 
-  // Remote buttons. Rewind and fast-forward also switch stations, in case
-  // the TV's browser keeps up/down for itself.
+  // Play/pause on the remote. (Silk keeps the arrows and rewind/fast-forward.)
   window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp" || e.key === "MediaFastForward" || e.key === "MediaTrackNext") cycleStation(1);
-    if (e.key === "ArrowDown" || e.key === "MediaRewind" || e.key === "MediaTrackPrevious") cycleStation(-1);
     if (e.key === "MediaPlayPause" || e.keyCode === 179) setPaused(!paused);
     if (e.key === "MediaPause") setPaused(true);
     if (e.key === "MediaPlay") setPaused(false);
@@ -183,8 +229,6 @@
     on("play", () => setPaused(false));
     on("pause", () => setPaused(true));
     on("stop", () => setPaused(true));
-    on("nexttrack", () => cycleStation(1));
-    on("previoustrack", () => cycleStation(-1));
   }
 
   // The same OK press that turns on the bell also turns on the music.

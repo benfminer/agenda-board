@@ -48,7 +48,8 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 - The list of radio stations for music. Starter list: `sheet-template/stations.csv`. Only Station and Stream are used; the other columns are notes.
 - The station (and song, when known) shows in small type under the Quote of the Day. Add `?music=Station Name` to the address to preview a station without changing the Sheet.
 - Music plays whenever the board is on (turn the TV off after school), and starts with the same OK press as the bell. It gets quieter while the bell rings.
-- Remote: **up/down** (or **rewind/fast-forward**) switch stations. A pick lasts the rest of the day, or until the Sheet's Music setting changes. **Play/pause** pauses only the music; the independent work bell still rings. A pause lasts until you press it again or the board reloads overnight.
+- **To switch stations from the TV:** move Silk's pointer to the music button under the Quote of the Day (it shows the station, or "Music off") and press OK. Pick a station or Off from the list. A pick lasts the rest of the day, or until the Sheet's Music setting changes. (Silk keeps the remote's arrows and rewind/fast-forward for itself, so those can't switch stations.)
+- Remote: **Play/pause** pauses only the music; the independent work bell still rings. A pause lasts until you press it again or the board reloads overnight.
 - SomaFM stations and KUSC also show the song playing. The others show just the station name.
 - Station links aren't official and can stop working. If one does, the board shows "(connecting)" and keeps retrying; pick another station.
 
@@ -94,7 +95,7 @@ On minimum days, Daylight says "Minimum day, out at 12:00" under the clock and i
 
 **Switching:**
 - **From the Sheet:** change Theme in the Settings tab. The TV follows within a couple of minutes.
-- **From the remote:** press left or right to flip through the looks instantly. A remote pick lasts the rest of the day; the next morning the board goes back to the Sheet's choice. Changing the Sheet always wins.
+- **From a keyboard:** press left or right to flip through the looks. This doesn't work from the Fire TV remote, because Silk uses the arrows for its pointer.
 
 ## Fire TV setup (Toshiba 75C350NU, Silk browser)
 1. **Open the board in Silk:** go to https://benfminer.github.io/agenda-board/

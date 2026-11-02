@@ -34,13 +34,13 @@ Starter files for every tab are in [`sheet-template/`](sheet-template/).
 
 | Button | What it does |
 |---|---|
-| **OK** | Turns on sound and full screen (once per page load) |
-| **Left / Right** | Switch between the three looks (Original, Trailhead, Daylight) |
-| **Up / Down** | Switch radio stations |
-| **Rewind / Fast-forward** | Also switch radio stations |
+| **OK** | Turns on sound and full screen (once per page load), and clicks whatever Silk's pointer is on |
+| **Arrows** | Move Silk's pointer (Silk keeps the arrows, and rewind/fast-forward scroll the page) |
 | **Play / Pause** | Pause or resume the music. The bell still rings. |
 
-Remote picks last for the rest of the day. Changing the Sheet always wins.
+**Changing the music:** move the pointer to the music button under the Quote of the Day and press OK. A list of stations opens; point at one (or Off) and press OK. The pick lasts the rest of the day. Changing the Sheet always wins.
+
+**Changing the look:** use the Theme setting in the Sheet. (Left/right on a keyboard also works, but Silk keeps the remote's arrows for its pointer.)
 
 ## Music
 
