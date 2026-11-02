@@ -237,8 +237,8 @@
       .filter((r) => r.station && /^https:\/\//.test(r.stream || ""))
       .map((r) => ({ name: r.station.trim(), stream: r.stream.trim() }));
   }
-  // News tab rows look like "Headline | Source | Summary". IMPORTFEED formulas
-  // in the Sheet fill in the headlines and summaries. Sources take turns so
+  // News tab rows look like "Headline | Source | Summary". An Apps Script in
+  // the Sheet (sheet-template/news-refresh.gs) fills them in every hour. Sources take turns so
   // one doesn't hog the bar.
   function newsFrom(rows) {
     const bySource = {};

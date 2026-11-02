@@ -53,17 +53,10 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 - Station links aren't official and can stop working. If one does, the board shows "(connecting)" and keeps retrying; pick another station.
 
 ### News (`Headline` | `Source` | `Summary`)
-- Headlines and short summaries for the "In the News" bar. Google fills them in with IMPORTFEED formulas, so there's nothing to type day to day. Starter file: `sheet-template/news.csv`.
-- Setup: put `Headline`, `Source`, `Summary` in A1, B1, C1. Then paste (no space before the `=`):
-  - A2: `=IMPORTFEED("https://www.newsinlevels.com/feed/","items title",FALSE,10)`
-  - C2: `=IMPORTFEED("https://www.newsinlevels.com/feed/","items summary",FALSE,10)`
-  - B2 through B11: `News in Levels`
-  - A12: `=IMPORTFEED("https://feeds.npr.org/1001/rss.xml","items title",FALSE,10)`
-  - C12: `=IMPORTFEED("https://feeds.npr.org/1001/rss.xml","items summary",FALSE,10)`
-  - B12 through B21: `NPR`
-- News in Levels rewrites real news in easy English at three levels. The board shows only Level 1 and hides the other two. NPR is regular news with a one-sentence summary.
-- The board shows as many whole sentences of each summary as fit, and leaves out NPR's photo captions. The sources take turns.
-- You can also type your own headline (and summary) in any empty row. Delete everything (or the tab) to hide the bar.
+- Headlines and short summaries for the "In the News" bar, from News in Levels (easy English, Level 1 only) and NPR.
+- A small Google Apps Script fills this tab every hour, on Google's servers, so the Sheet doesn't need to be open. The script is `sheet-template/news-refresh.gs`. To set it up (once): in the Sheet, **Extensions > Apps Script**, paste the script in place of what's there, save, choose **setup** in the function menu, and press **Run**. Approve Google's permission screens (it's your own script, so choose Advanced > Go to project if Google warns it's unverified).
+- To change sources, edit the `FEEDS` list at the top of the script.
+- The board shows as many whole sentences of each summary as fit. The sources take turns. Delete the rows (or the tab) to hide the bar.
 
 ### Special Days (`Date` | `Schedule`)
 - **Every Wednesday is automatically a minimum day.** Nothing to enter.
@@ -79,7 +72,7 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 | What | How often |
 |---|---|
 | Sheet (agenda, notes, events, theme, message, music, special days, news) | Every minute, plus a minute or two for Google to publish the edit |
-| News headlines from the feeds | About every hour (Google refreshes IMPORTFEED on its own) |
+| News headlines | Every hour (the Apps Script in the News tab's setup) |
 | Weather and forecast | Every 30 minutes |
 | Quote | Once per school day |
 | Song name (SomaFM and KUSC) | Every 30 seconds |

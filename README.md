@@ -26,7 +26,7 @@ A classroom TV display that shows the day's agenda, notes, upcoming events, weat
 | **Settings** | Theme, an announcement Message, and the Music station. |
 | **Special Days** | Exceptions to the normal schedule (minimum days, regular Wednesdays). |
 | **Stations** | The list of radio stations the Music setting picks from. |
-| **News** | Headlines and summaries for the bottom bar (News in Levels and NPR), filled in by IMPORTFEED formulas. |
+| **News** | Headlines and summaries for the bottom bar (News in Levels and NPR), filled in every hour by an Apps Script (`sheet-template/news-refresh.gs`). |
 
 Starter files for every tab are in [`sheet-template/`](sheet-template/).
 
