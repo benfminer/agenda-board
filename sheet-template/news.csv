@@ -1,11 +1,21 @@
-Headline,Source
-"=IMPORTFEED(""https://www.newsforkids.net/feed/"",""items title"",FALSE,5)",News for Kids
-,News for Kids
-,News for Kids
-,News for Kids
-,News for Kids
-"=IMPORTFEED(""https://www.snexplores.org/feed"",""items title"",FALSE,5)",Science News Explores
-,Science News Explores
-,Science News Explores
-,Science News Explores
-,Science News Explores
+Headline,Source,Summary
+"=IMPORTFEED(""https://www.newsinlevels.com/feed/"",""items title"",FALSE,10)",News in Levels,"=IMPORTFEED(""https://www.newsinlevels.com/feed/"",""items summary"",FALSE,10)"
+,News in Levels,
+,News in Levels,
+,News in Levels,
+,News in Levels,
+,News in Levels,
+,News in Levels,
+,News in Levels,
+,News in Levels,
+,News in Levels,
+"=IMPORTFEED(""https://feeds.npr.org/1001/rss.xml"",""items title"",FALSE,10)",NPR,"=IMPORTFEED(""https://feeds.npr.org/1001/rss.xml"",""items summary"",FALSE,10)"
+,NPR,
+,NPR,
+,NPR,
+,NPR,
+,NPR,
+,NPR,
+,NPR,
+,NPR,
+,NPR,

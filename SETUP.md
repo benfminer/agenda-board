@@ -14,7 +14,7 @@ The classroom agenda board runs on the Fire TV and reads everything from a Googl
 - **5-Day Forecast:** automatic, from the free Open-Meteo weather service. The chance of rain shows only when it's 30% or more.
 - **Quote of the Day:** automatic, from a built-in list of 180 quotes (`quotes.js`). A new one each school day.
 - **Music:** radio from the station picked in the Settings tab. The station (and song, when known) shows under the quote.
-- **In the News:** kid-friendly headlines from the News tab along the bottom, one at a time, changing every 15 seconds. Hidden if the tab is missing or empty.
+- **In the News:** headlines with a short summary from the News tab (News in Levels and NPR) along the bottom, one at a time, changing every 20 seconds. Hidden if the tab is missing or empty.
 - **Bell:** a soft chime plus a big "Independent Work Time" banner 30 minutes before each period ends.
 
 ## The Google Sheet
@@ -52,11 +52,18 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 - SomaFM stations and KUSC also show the song playing. The others show just the station name.
 - Station links aren't official and can stop working. If one does, the board shows "(connecting)" and keeps retrying; pick another station.
 
-### News (`Headline` | `Source`)
-- Headlines for the "In the News" bar. Google fills them in with IMPORTFEED formulas, so there's nothing to type day to day. Starter file: `sheet-template/news.csv`.
-- Setup: put `Headline` in A1 and `Source` in B1. In A2 paste `=IMPORTFEED("https://www.newsforkids.net/feed/","items title",FALSE,5)` and type `News for Kids` in B2 through B6. In A7 paste `=IMPORTFEED("https://www.snexplores.org/feed","items title",FALSE,5)` and type `Science News Explores` in B7 through B11.
-- Both sources write for kids and teens and skip graphic stories. The board takes turns between sources.
-- You can also type your own headline in any empty row. Delete everything (or the tab) to hide the bar.
+### News (`Headline` | `Source` | `Summary`)
+- Headlines and short summaries for the "In the News" bar. Google fills them in with IMPORTFEED formulas, so there's nothing to type day to day. Starter file: `sheet-template/news.csv`.
+- Setup: put `Headline`, `Source`, `Summary` in A1, B1, C1. Then paste (no space before the `=`):
+  - A2: `=IMPORTFEED("https://www.newsinlevels.com/feed/","items title",FALSE,10)`
+  - C2: `=IMPORTFEED("https://www.newsinlevels.com/feed/","items summary",FALSE,10)`
+  - B2 through B11: `News in Levels`
+  - A12: `=IMPORTFEED("https://feeds.npr.org/1001/rss.xml","items title",FALSE,10)`
+  - C12: `=IMPORTFEED("https://feeds.npr.org/1001/rss.xml","items summary",FALSE,10)`
+  - B12 through B21: `NPR`
+- News in Levels rewrites real news in easy English at three levels. The board shows only Level 1 and hides the other two. NPR is regular news with a one-sentence summary.
+- The board shows the first two sentences of each summary, and the sources take turns.
+- You can also type your own headline (and summary) in any empty row. Delete everything (or the tab) to hide the bar.
 
 ### Special Days (`Date` | `Schedule`)
 - **Every Wednesday is automatically a minimum day.** Nothing to enter.

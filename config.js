@@ -50,7 +50,7 @@ const CONFIG = {
   musicVolume: 0.6,
 
   // How long each news headline stays up, in seconds.
-  newsSeconds: 15,
+  newsSeconds: 20,
 
   // How often to check for new data, in minutes.
   sheetRefreshMinutes: 1,

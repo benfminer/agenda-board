@@ -237,19 +237,36 @@
       .filter((r) => r.station && /^https:\/\//.test(r.stream || ""))
       .map((r) => ({ name: r.station.trim(), stream: r.stream.trim() }));
   }
-  // News tab rows look like "Headline | Source". IMPORTFEED formulas in the
-  // Sheet fill in the headlines. Sources take turns so one doesn't hog the bar.
+  // News tab rows look like "Headline | Source | Summary". IMPORTFEED formulas
+  // in the Sheet fill in the headlines and summaries. Sources take turns so
+  // one doesn't hog the bar.
   function newsFrom(rows) {
     const bySource = {};
     // Skips errors like #N/A, and formulas that got typed in as plain text.
     rows.filter((r) => r.headline && !/^[#=]/.test(r.headline)).forEach((r) => {
+      // News in Levels posts each story three times. Keep only the easiest.
+      const level = decodeEntities(r.headline).match(/^(.*?)\s*[–-]\s*level\s*(\d)\s*$/i);
+      if (level && level[2] !== "1") return;
+      const headline = level ? level[1] : decodeEntities(r.headline);
       const source = r.source || "";
-      (bySource[source] = bySource[source] || []).push({ headline: decodeEntities(r.headline), source });
+      (bySource[source] = bySource[source] || []).push({ headline, source, summary: shortSummary(r.summary || "") });
     });
     const lists = Object.values(bySource);
     const out = [];
     for (let i = 0; lists.some((l) => i < l.length); i++) lists.forEach((l) => { if (l[i]) out.push(l[i]); });
     return out;
+  }
+
+  // The first two sentences of a feed's summary, without the date stamp and
+  // "The post ... appeared first on ..." line some feeds add.
+  function shortSummary(text) {
+    const clean = decodeEntities(text.replace(/<[^>]*>/g, " "))
+      .split(/\s*The post .* appeared first/)[0]
+      .replace(/^\d{1,2}-\d{1,2}-\d{4}\s+\d{1,2}:\d{2}\s*/, "")
+      .replace(/\s+/g, " ").trim();
+    // A sentence ends at . ! or ? followed by a space, so "7.6" stays whole.
+    const sentences = clean.match(/.+?[.!?]+["'’”]?(?=\s|$)/g) || [clean];
+    return sentences.slice(0, 2).join("").trim();
   }
 
   // Feeds sometimes send "&#8217;" instead of an apostrophe.
@@ -291,6 +308,7 @@
     const id = sheetId();
     if (!id || params.get("sample")) {
       data = sampleData(now());
+      data.news = newsFrom(data.news || []);
       dataSource = "sample";
       renderData();
       return;
@@ -351,6 +369,7 @@
     const item = items[newsIndex % items.length];
     $("news-headline").textContent = item.headline;
     $("news-source").textContent = item.source;
+    $("news-summary").textContent = item.summary || "";
   }
 
   function nextHeadline() {

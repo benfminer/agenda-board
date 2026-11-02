@@ -29,9 +29,10 @@ function sampleData(today) {
       { date: d(-2), event: "Past event (should not show)" },
     ],
     news: [
-      { headline: "The US Gets a New National Park", source: "News for Kids" },
-      { headline: "Toys inspired this moon rover\u2019s unique design", source: "Science News Explores" },
-      { headline: "Three African Wild Dogs Travel Over 2,500 Miles", source: "News for Kids" },
+      { headline: "The longest train \u2013 level 1", source: "News in Levels", summary: "02-11-2026 07:00 South Africa tests a very long train. The train is 7.6 kilometres long. It has 696 empty wagons." },
+      { headline: "The longest train \u2013 level 2", source: "News in Levels", summary: "Should not show." },
+      { headline: "AI chatbots are becoming political advisers. Their answers can mislead voters", source: "NPR", summary: "Millions of Americans are turning to AI for election information, but chatbots are getting voting facts wrong and recommending candidates, raising concerns they could influence voters' decisions." },
+      { headline: "How does this fluoride-free toothpaste compare when it comes to oral health?", source: "NPR", summary: "Many people are swapping out their fluoride dental products for ones made with a mineral called hydroxyapatite. What do dentists say about it?" },
     ],
   };
 }
