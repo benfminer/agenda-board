@@ -257,16 +257,27 @@
     return out;
   }
 
-  // The first two sentences of a feed's summary, without the date stamp and
-  // "The post ... appeared first on ..." line some feeds add.
+  // As many whole sentences of a feed's summary as fit in the news bar,
+  // without extras some feeds add: NPR's "[image: ...]" photo caption and
+  // "(Image credit: ...)", News in Levels' date stamp, *starred* vocabulary
+  // words, and "The post ... appeared first on ..." line.
+  const SUMMARY_CHARS = 280;
   function shortSummary(text) {
     const clean = decodeEntities(text.replace(/<[^>]*>/g, " "))
       .split(/\s*The post .* appeared first/)[0]
-      .replace(/^\d{1,2}-\d{1,2}-\d{4}\s+\d{1,2}:\d{2}\s*/, "")
-      .replace(/\s+/g, " ").trim();
+      .replace(/\[image:[^\]]*\]/gi, " ")
+      .replace(/\(Image credit:[^)]*\)/gi, " ")
+      .replace(/\*/g, "")
+      .replace(/\s+/g, " ").trim()
+      .replace(/^\d{1,2}-\d{1,2}-\d{4}\s+\d{1,2}:\d{2}\s*/, "");
     // A sentence ends at . ! or ? followed by a space, so "7.6" stays whole.
     const sentences = clean.match(/.+?[.!?]+["'’”]?(?=\s|$)/g) || [clean];
-    return sentences.slice(0, 2).join("").trim();
+    let out = sentences[0] || "";
+    for (const s of sentences.slice(1)) {
+      if ((out + s).length > SUMMARY_CHARS) break;
+      out += s;
+    }
+    return out.trim();
   }
 
   // Feeds sometimes send "&#8217;" instead of an apostrophe.
@@ -370,6 +381,9 @@
     $("news-headline").textContent = item.headline;
     $("news-source").textContent = item.source;
     $("news-summary").textContent = item.summary || "";
+    // A two-line headline leaves room for two lines of summary, not three.
+    const head = $("news-headline");
+    el.classList.toggle("long-headline", head.clientHeight > parseFloat(getComputedStyle(head).lineHeight) * 1.5);
   }
 
   function nextHeadline() {
@@ -484,7 +498,7 @@
     if (code === 1) return [isDay ? "🌤️" : "🌙", "Mostly clear"];
     if (code === 2) return ["⛅", "Partly cloudy"];
     if (code === 3) return ["☁️", "Cloudy"];
-    if (code === 45 || code === 48) return ["🌫️", "Foggy"];
+    if (code === 45 || code === 48) return ["☁️", "Foggy"]; // Silk can't draw the fog emoji
     if (code >= 51 && code <= 57) return ["🌦️", "Drizzle"];
     if (code >= 61 && code <= 67) return ["🌧️", "Rain"];
     if (code >= 71 && code <= 77) return ["❄️", "Snow"];
@@ -496,7 +510,9 @@
 
   // Five columns: day, picture, high/low, and chance of rain.
   // Rain only shows at 30% or more, same as the line at the top.
-  function renderForecast(daily) {
+  // Today's picture is the weather right now, so it matches the top. (The
+  // day's forecast picture is its worst weather, like early morning fog.)
+  function renderForecast(daily, current) {
     const el = $("forecast");
     if (!el) return;
     const highs = daily.temperature_2m_max.map(Math.round);
@@ -504,7 +520,7 @@
     el.innerHTML = daily.time.map((dateStr, i) => {
       const [y, m, d] = dateStr.split("-").map(Number);
       const day = i === 0 ? "Today" : new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short" });
-      const [icon, desc] = weatherLook(daily.weather_code[i], 1);
+      const [icon, desc] = i === 0 ? weatherLook(current.weather_code, current.is_day) : weatherLook(daily.weather_code[i], 1);
       const rain = daily.precipitation_probability_max[i] || 0;
       return `<div class="fc-day${i === 0 ? " today" : ""}">`
         + `<div class="fc-name">${day}</div>`
@@ -533,7 +549,7 @@
       $("w-icon").textContent = icon;
       $("w-temp").textContent = `${Math.round(j.current.temperature_2m)}°F`;
       $("w-desc").textContent = `${desc}  ·  High ${hi}° Low ${lo}°${rain >= 30 ? `  ·  ${rain}% rain` : ""}`;
-      safe(() => renderForecast(j.daily));
+      safe(() => renderForecast(j.daily, j.current));
     } catch (e) {
       console.warn("Weather load failed", e);
     }

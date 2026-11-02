@@ -32,6 +32,7 @@ function sampleData(today) {
       { headline: "The longest train \u2013 level 1", source: "News in Levels", summary: "02-11-2026 07:00 South Africa tests a very long train. The train is 7.6 kilometres long. It has 696 empty wagons." },
       { headline: "The longest train \u2013 level 2", source: "News in Levels", summary: "Should not show." },
       { headline: "AI chatbots are becoming political advisers. Their answers can mislead voters", source: "NPR", summary: "Millions of Americans are turning to AI for election information, but chatbots are getting voting facts wrong and recommending candidates, raising concerns they could influence voters' decisions." },
+      { headline: "When it comes to election pressure, this year's Georgia or Michigan could be anywhere in the country, officials say", source: "NPR", summary: "[image: A sign directs residents to a polling place.] On the eve of the Nov. 3 election, the Trump administration is hoping the Supreme Court will reverse lower courts that rejected its request to order California to set aside the ballots of thousands of people it says are \"likely\" noncitizens. A second sentence that should fit or be dropped. (Image credit: Someone)" },
       { headline: "How does this fluoride-free toothpaste compare when it comes to oral health?", source: "NPR", summary: "Many people are swapping out their fluoride dental products for ones made with a mineral called hydroxyapatite. What do dentists say about it?" },
     ],
   };
