@@ -51,7 +51,7 @@ Tab names must match (capital letters don't matter): **Agenda**, **Notes**, **Ev
 - **To switch stations from the TV:** move Silk's pointer to the music button under the Quote of the Day (it shows the station, or "Music off") and press OK. Pick a station or Off from the list. A pick lasts the rest of the day, or until the Sheet's Music setting changes. (Silk keeps the remote's arrows and rewind/fast-forward for itself, so those can't switch stations.)
 - Remote: **Play/pause** pauses only the music; the independent work bell still rings. A pause lasts until you press it again or the board reloads overnight.
 - SomaFM stations and KUSC also show the song playing. The others show just the station name.
-- Station links aren't official and can stop working. If one does, the board shows "(connecting)" and keeps retrying; pick another station.
+- Station links aren't official and can stop working. If one does, the board shows "(connecting)" and keeps retrying. SomaFM stations also try their backup servers. After about a minute it says "(can't connect)"; pick another station.
 
 ### News (`Headline` | `Source` | `Summary`)
 - Headlines and short summaries for the "In the News" bar, from News in Levels (easy English, Level 1 only) and NPR.

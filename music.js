@@ -16,9 +16,12 @@
   let ducked = false;
   let playing = null;   // the station currently loaded
   let retryAt = 0;
-  let lastProgress = 0; // last time the stream actually moved forward
+  let lastProgress = 0; // last time the stream moved forward (or was restarted)
+  let lastHeard = 0;    // last time the stream actually moved forward
   let song = "";        // "Title by Artist", when the station tells us
   let ourChangeAt = 0;  // when this code last started or stopped the audio
+  let tries = 0;        // connection tries since the stream last played
+  const GIVE_UP_TRIES = 4; // after this many (about a minute), say "can't connect"
 
   function readStore(key, fallback) {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; }
@@ -50,12 +53,24 @@
     audio.volume = CONFIG.musicVolume * (ducked ? 0.25 : 1);
   }
 
+  // SomaFM runs each station on several servers, and the busy ones sometimes
+  // turn people away. Each retry tries the next server, like SomaFM's own
+  // players do. Other stations just retry the same link.
+  const SOMA_SERVERS = ["ice2", "ice6", "ice5"];
+  function streamUrl(stream, attempt) {
+    const m = stream.match(/^(https?:\/\/)(ice\d+)(\.somafm\.com\/.*)$/i);
+    if (!m) return stream;
+    const servers = [m[2], ...SOMA_SERVERS.filter((s) => s !== m[2].toLowerCase())];
+    return m[1] + servers[attempt % servers.length] + m[3];
+  }
+
   function start(station) {
     ourChangeAt = Date.now();
     const switching = !playing || playing.stream !== station.stream;
+    tries = switching ? 0 : tries + 1;
     playing = station;
     lastProgress = Date.now();
-    audio.src = station.stream;
+    audio.src = streamUrl(station.stream, tries);
     setVolume();
     audio.play().catch(() => {}); // blocked until the first remote press
     if (switching) { song = ""; refreshSong(); }
@@ -83,9 +98,10 @@
       el.textContent = "\u266A Music off";
       return;
     }
-    const flowing = unlocked && !audio.paused && Date.now() - lastProgress < 3000;
+    const flowing = unlocked && !audio.paused && Date.now() - lastHeard < 3000;
     const name = song ? `${song} · ${playing.name}` : playing.name; // song first, it gets cut off last
-    el.textContent = flowing ? `♪ ${name}` : `♪ ${playing.name} (connecting)`;
+    const status = tries >= GIVE_UP_TRIES ? "(can't connect)" : "(connecting)"; // still retries either way
+    el.textContent = flowing ? `♪ ${name}` : `♪ ${playing.name} ${status}`;
   }
 
   // ---------- Song info ----------
@@ -218,7 +234,7 @@
     if (playing && !audio.error && !audio.ended && Date.now() - ourChangeAt > 1000) setPaused(true);
     renderNowPlaying();
   });
-  audio.addEventListener("timeupdate", () => { lastProgress = Date.now(); });
+  audio.addEventListener("timeupdate", () => { lastProgress = lastHeard = Date.now(); tries = 0; });
   setInterval(update, 1000);
   setInterval(refreshSong, 30000);
   update();
