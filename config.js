@@ -7,7 +7,8 @@ const CONFIG = {
   // Tab names in the Google Sheet. They must match exactly.
   tabs: { agenda: "Agenda", notes: "Notes", events: "Events", settings: "Settings", special: "Special Days", stations: "Stations", news: "News" },
 
-  // Weather location (92105, City Heights, San Diego).
+  // Weather location (92105, City Heights, San Diego). The weather comes from
+  // the National Weather Service, so the location must be in the United States.
   weather: { latitude: 32.74, longitude: -117.09, timezone: "America/Los_Angeles" },
 
   // The first school day of the quote list (YYYY-MM-DD).

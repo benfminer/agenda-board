@@ -573,7 +573,7 @@
     }
   }
 
-  // ---------- Weather (Open-Meteo, no key needed) ----------
+  // ---------- Weather (National Weather Service, with Open-Meteo as backup) ----------
   function weatherLook(code, isDay) {
     if (code === 0) return isDay ? ["☀️", "Sunny"] : ["🌙", "Clear"];
     if (code === 1) return isDay ? ["🌤️", "Mostly sunny"] : ["🌙", "Mostly clear"];
@@ -589,52 +589,147 @@
     return ["🌡️", ""];
   }
 
+  // The National Weather Service describes weather in words ("Chance Rain
+  // Showers then Mostly Sunny"). Turn them into the board's picture and word.
+  // Rain under 30% is left out, same as everywhere else on the board.
+  function nwsLook(text, rain, isDay) {
+    const t = String(text || "").toLowerCase();
+    const wet = rain == null || rain >= 30;
+    if (wet && /thunder/.test(t)) return ["⛈️", "Thunderstorms"];
+    if (wet && /snow|sleet|flurr|blizzard|freezing/.test(t)) return ["❄️", "Snow"];
+    if (wet && /shower/.test(t)) return ["🌧️", "Showers"];
+    if (wet && /drizzle/.test(t)) return ["🌦️", "Drizzle"];
+    if (wet && /rain/.test(t)) return ["🌧️", "Rain"];
+    if (/fog/.test(t)) return ["☁️", "Foggy"]; // Silk can't draw the fog emoji
+    if (/mostly (sunny|clear)/.test(t)) return isDay ? ["🌤️", "Mostly sunny"] : ["🌙", "Mostly clear"];
+    if (/partly/.test(t)) return ["⛅", "Partly cloudy"];
+    if (/sunny|clear/.test(t)) return isDay ? ["☀️", "Sunny"] : ["🌙", "Clear"];
+    return ["☁️", "Cloudy"];
+  }
+
   // Five columns: day, picture and word (Sunny, Cloudy...), high/low, and chance of rain.
   // Rain only shows at 30% or more, same as the line at the top.
   // Today's picture is the weather right now, so it matches the top. (The
   // day's forecast picture is its worst weather, like early morning fog.)
-  function renderForecast(daily, current) {
+  function renderForecast(days, now) {
     const el = $("forecast");
     if (!el) return;
-    const highs = daily.temperature_2m_max.map(Math.round);
-    const lows = daily.temperature_2m_min.map(Math.round);
-    el.innerHTML = daily.time.map((dateStr, i) => {
-      const [y, m, d] = dateStr.split("-").map(Number);
-      const day = i === 0 ? "Today" : new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short" });
-      const [icon, desc] = i === 0 ? weatherLook(current.weather_code, current.is_day) : weatherLook(daily.weather_code[i], 1);
-      const rain = daily.precipitation_probability_max[i] || 0;
+    el.innerHTML = days.map((day, i) => {
+      const [y, m, d] = day.date.split("-").map(Number);
+      const name = i === 0 ? "Today" : new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short" });
+      const [icon, desc] = i === 0 ? now.look : day.look;
+      const rain = day.rain || 0;
       return `<div class="fc-day${i === 0 ? " today" : ""}">`
-        + `<div class="fc-name">${day}</div>`
+        + `<div class="fc-name">${name}</div>`
         + `<div class="fc-icon">${icon}</div>`
         + `<div class="fc-desc">${desc}</div>`
-        + `<div class="fc-temps"><span class="fc-hi">${highs[i]}°</span> <span class="fc-lo">${lows[i]}°</span></div>`
+        + `<div class="fc-temps"><span class="fc-hi">${day.hi}°</span> <span class="fc-lo">${day.lo}°</span></div>`
         + `<div class="fc-rain${rain >= 40 ? " wet" : ""}">${rain >= 30 ? `💧 ${rain}%` : "&nbsp;"}</div>`
         + `</div>`;
     }).join("");
   }
 
-  async function refreshWeather() {
+  const WEATHER_WAIT_SECONDS = 10; // give up on a weather service that doesn't answer
+  const WEATHER_RETRY_MINUTES = 2; // try again this soon when no service answered
+
+  async function getJson(url) {
+    const stop = new AbortController();
+    const timer = setTimeout(() => stop.abort(), WEATHER_WAIT_SECONDS * 1000);
+    try {
+      const res = await fetch(url, { signal: stop.signal });
+      if (!res.ok) throw new Error(`${url} returned ${res.status}`);
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // Both weather services are turned into the same shape:
+  // { now: { temp, look }, days: [{ date, look, hi, lo, rain }] }
+
+  // First choice: the National Weather Service (weather.gov, no key needed).
+  let nwsLinks = null; // the forecast links for our location, looked up once
+  async function nwsWeather() {
+    const w = CONFIG.weather;
+    if (!nwsLinks) nwsLinks = (await getJson(`https://api.weather.gov/points/${w.latitude},${w.longitude}`)).properties;
+    const [daily, hourly] = await Promise.all([getJson(nwsLinks.forecast), getJson(nwsLinks.forecastHourly)]);
+    const pop = (p) => (p.probabilityOfPrecipitation ? p.probabilityOfPrecipitation.value : null);
+    const hours = hourly.properties.periods;
+    const t = Date.now();
+    const hour = hours.find((p) => new Date(p.startTime) <= t && t < new Date(p.endTime)) || hours[0];
+    const now = { temp: Math.round(hour.temperature), look: nwsLook(hour.shortForecast, pop(hour), hour.isDaytime) };
+
+    // The forecast comes as day and night halves. The day half has the high
+    // and the picture, the night half has the low.
+    const today = hour.startTime.slice(0, 10);
+    const days = [];
+    for (const p of daily.properties.periods) {
+      const date = p.startTime.slice(0, 10);
+      if (date < today) continue;
+      let day = days.find((x) => x.date === date);
+      if (!day) days.push(day = { date });
+      if (p.isDaytime) {
+        day.hi = p.temperature;
+        day.rain = pop(p);
+        day.look = nwsLook(p.shortForecast, pop(p), true);
+      } else {
+        day.lo = p.temperature;
+        if (!day.look) { day.rain = pop(p); day.look = nwsLook(p.shortForecast, pop(p), false); }
+      }
+    }
+    // In the evening today has no day half left, so it has no high.
+    if (days[0].hi == null) days[0].hi = Math.max(now.temp, days[0].lo);
+    return { now, days: days.filter((day) => day.lo != null).slice(0, 5) };
+  }
+
+  // Backup: Open-Meteo (no key needed).
+  async function openMeteoWeather() {
     const w = CONFIG.weather;
     const url = "https://api.open-meteo.com/v1/forecast"
       + `?latitude=${w.latitude}&longitude=${w.longitude}`
       + "&current=temperature_2m,weather_code,is_day"
       + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
       + `&temperature_unit=fahrenheit&timezone=${encodeURIComponent(w.timezone)}&forecast_days=5`;
+    const j = await getJson(url);
+    return {
+      now: { temp: Math.round(j.current.temperature_2m), look: weatherLook(j.current.weather_code, j.current.is_day) },
+      days: j.daily.time.map((date, i) => ({
+        date,
+        look: weatherLook(j.daily.weather_code[i], 1),
+        hi: Math.round(j.daily.temperature_2m_max[i]),
+        lo: Math.round(j.daily.temperature_2m_min[i]),
+        rain: j.daily.precipitation_probability_max[i],
+      })),
+    };
+  }
+
+  let weatherShown = false;
+  let weatherRetry = null;
+  async function refreshWeather() {
+    clearTimeout(weatherRetry);
+    let w;
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Weather returned ${res.status}`);
-      const j = await res.json();
-      const [icon, desc] = weatherLook(j.current.weather_code, j.current.is_day);
-      const hi = Math.round(j.daily.temperature_2m_max[0]);
-      const lo = Math.round(j.daily.temperature_2m_min[0]);
-      const rain = j.daily.precipitation_probability_max[0];
-      $("w-icon").textContent = icon;
-      $("w-temp").textContent = `${Math.round(j.current.temperature_2m)}°F`;
-      $("w-desc").textContent = `${desc}  ·  High ${hi}° Low ${lo}°${rain >= 30 ? `  ·  ${rain}% rain` : ""}`;
-      safe(() => renderForecast(j.daily, j.current));
+      w = await nwsWeather();
     } catch (e) {
-      console.warn("Weather load failed", e);
+      console.warn("National Weather Service failed, trying Open-Meteo", e);
+      try {
+        w = await openMeteoWeather();
+      } catch (e2) {
+        console.warn("Weather load failed", e2);
+        if (!weatherShown) $("w-desc").textContent = "No weather right now";
+        weatherRetry = setTimeout(refreshWeather, WEATHER_RETRY_MINUTES * 60000);
+        return;
+      }
     }
+    safe(() => {
+      const [icon, desc] = w.now.look;
+      const { hi, lo, rain } = w.days[0];
+      $("w-icon").textContent = icon;
+      $("w-temp").textContent = `${w.now.temp}°F`;
+      $("w-desc").textContent = `${desc}  ·  High ${hi}° Low ${lo}°${rain >= 30 ? `  ·  ${rain}% rain` : ""}`;
+      weatherShown = true;
+    });
+    safe(() => renderForecast(w.days, w.now));
   }
 
   function hasIndependentWork(d) {
